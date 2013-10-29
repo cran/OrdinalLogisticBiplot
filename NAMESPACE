@@ -1,0 +1,5 @@
+export(OrdinalLogisticBiplot,pordlogist,OrdinalLogBiplotEM,
+plotOrdBipCoeffVariable,plotOrdinalVariable,CheckDataSet)
+S3method(summary,pordlogist)
+S3method(summary,ordinal.logistic.biplot)
+S3method(plot,ordinal.logistic.biplot)
