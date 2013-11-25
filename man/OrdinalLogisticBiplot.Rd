@@ -8,7 +8,7 @@ Function that calculates the parameters of the Ordinal Logistic Biplot.
 OrdinalLogisticBiplot(datanom,sFormula=NULL,numFactors=2,
 coordinates="EM",rotation="varimax",metfsco="EAP",
 nnodos = 10, tol = 1e-04, maxiter = 100,
-penalization = 0.1,cte=TRUE, show=FALSE,ItemCurves = FALSE)
+penalization = 0.1,cte=TRUE, show=TRUE,ItemCurves = FALSE,initial=2,alfa=1)
 }
 \arguments{
   \item{datanom}{
@@ -45,10 +45,16 @@ Penalization for the ridge regression for each variable.
 Include constant in the logistic regression model. Default is TRUE.
 }
   \item{show}{
-Show intermediate copmputations. Default is TRUE.
+Show intermediate computations. Default is TRUE.
 }
 \item{ItemCurves}{
 Show item information curves. Default is FALSE.
+}
+\item{initial}{
+Method used to choose the initial ability in the EM algorithm. Default value is 2.
+}
+\item{alfa}{
+Optional parameter to calculate row and column coordinates in Simple correspondence analysis if the initial parameter is equal to 1. Default value is 1.
 }
 }
 \details{
@@ -67,7 +73,8 @@ An object of class \code{"ordinal.logistic.biplot"}.  This has some components:
 
   \item{dataSet }{Data set of study with all the information about the name of the levels and names of the variables and individuals}
   \item{ItemsCoords }{Coordinates for the rows in the reduced space}
-  \item{VariableModels }{Information of the regression resuls for each variable}
+  \item{NCats }{Number of categories of each variable from the data set}  
+  \item{estimObject }{Object with all the estimated information using EM alternated algorithm or MIRT procedure}
   \item{Fitting  }{matrix with the percentage of correct clasifications and pseudo R squared valued for each variable}
   \item{coefs  }{matrix with the estimated coefficients}
   \item{thresholds  }{matrix with the estimated intercept limits}
@@ -84,6 +91,7 @@ An object of class \code{"ordinal.logistic.biplot"}.  This has some components:
   \item{show }{Boolean value to indicate if we want to see the results of our analysis}
   \item{ItemCurves }{Boolean value to specify if item information curves will be plotted}
   \item{LogLik }{Logarithm of the likelihood}  
+  \item{FactorLoadingsComm }{Factor loadings and communalities}
 }
 \references{
 Vicente-Villardon, J., Galindo, M.P & Blazquez-Zaballos, A. (2006), \emph{Logistic biplots},Multiple Correspondence Analysis and related methods pp. 491--509.

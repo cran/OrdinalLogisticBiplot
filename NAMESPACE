@@ -1,5 +1,7 @@
 export(OrdinalLogisticBiplot,pordlogist,OrdinalLogBiplotEM,
-plotOrdBipCoeffVariable,plotOrdinalVariable,CheckDataSet)
+plotOrdBipCoeffVariable,plotOrdinalVariable,CheckDataSet,PlotClusterVariable,
+BiplotDensity,GetOrdinalBiplotObjectPenal,GetOrdinalBiplotObjectMIRT,EstimationRowsMIRT)
 S3method(summary,pordlogist)
 S3method(summary,ordinal.logistic.biplot)
 S3method(plot,ordinal.logistic.biplot)
+import(mirt,MASS,NominalLogisticBiplot)

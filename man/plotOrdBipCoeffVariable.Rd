@@ -7,7 +7,7 @@ Plot an ordinal variable to an existing biplot.
 This function plots an ordinal variable to an existing biplot or to a new one, using the estimated parameters for the variable.
 }
 \usage{
-plotOrdBipCoeffVariable(x, coeffic, D = 1, planex = 1, planey = 2,
+plotOrdBipCoeffVariable(nameVariable, coeffic, D = 1, planex = 1, planey = 2,
 xi = -3.5, xu = 3.5, yi = -3.5, yu = 3.5, margin = 0,
 numFactors = 2, CexVar = 0.7, ColorVar = "blue",
 PchVar = 0.7, addToPlot = FALSE, showIIC = TRUE,
@@ -15,7 +15,7 @@ iicxi = -2.5, iicxu = 2.5)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
+  \item{nameVariable}{
 Name of the variable the user wants to plot.
 }
   \item{coeffic}{
@@ -80,10 +80,11 @@ data(LevelSatPhd)
 olbo = OrdinalLogisticBiplot(LevelSatPhd,sFormula=NULL,
       numFactors=2,coordinates="EM",penalization=0.2)
 nameVariable="Salary"
-coeffic = olbo$VariableModels[,1]$coef
-plotOrdBipCoeffVariable(nameVariable,coeffic,D = 1,
-      planex = 1,planey = 2,xi=-2.5,xu=2.5,yi=-2.5,
-      yu=2.5,addToPlot=FALSE,iicxi=-2.5,iicxu=2.5)
+ColumNames = olbo$dataSet$ColumNames
+olb = olbo$estimObject
+catOrdBiplotPenal = GetOrdinalBiplotObjectPenal(ColumNames,olb)
+coeffic = catOrdBiplotPenal$matBiplot[,1]$coef
+plotOrdBipCoeffVariable(nameVariable,coeffic)
 }
 
 \keyword{plot}

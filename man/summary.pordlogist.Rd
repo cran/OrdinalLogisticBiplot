@@ -11,7 +11,6 @@ This function shows a summary of the principal results for the estimation
   "Estimate coefficients", "Std. Error", "z value" or "Pr(>|z|)" values.
 }
 \usage{
-# S3 method for class 'pordlogist'
 \method{summary}{pordlogist}(object,\dots)
 }
 \arguments{

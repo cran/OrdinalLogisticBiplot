@@ -27,23 +27,23 @@ pordlogist <- function(y, x, penalization = 0.1, tol = 1e-04, maxiter = 200, sho
 	for (i in 1:n){
      R[i, ] = cumsum(Y[i, ])
   }
-  	if(J > 2){
-      	A = matrix(colSums(R[, 1:J - 1])/n, J - 1, 1)
-  	}else if(J == 2){
-  	         A = matrix(sum(R[, 1:J - 1])/n, J - 1, 1)
-        	}else{
-              stop("There is a variable with the same value for all the items. Revise the data set.")
-        	}
+	if(J > 2){
+    	A = matrix(colSums(R[, 1:J - 1])/n, J - 1, 1)
+	}else if(J == 2){
+	         A = matrix(sum(R[, 1:J - 1])/n, J - 1, 1)
+      	}else{
+            stop("There is a variable with the same value for all the items. Revise the data set.")
+      	}
 
 	Beta = matrix(0, p, 1)
 	B = rbind(A, Beta)
 	err = 0.1
 	iter = 0
 	while ((err > tol) & (iter < maxiter)) {
-		iter = iter + 1
+		iter = iter + 1		
 		eta = x %*% Beta
 		ETA = matrix(1, n, 1) %*% t(A) - eta %*% matrix(1, 1, (J - 1))
-		PIA = exp(ETA)/(1 + exp(ETA))
+	  PIA = exp(ETA)/(1 + exp(ETA))
 		PIA = cbind(PIA, matrix(1, n, 1))
 		PI = matrix(0, n, J)
 		PI[, 1] = PIA[, 1]
@@ -63,17 +63,18 @@ pordlogist <- function(y, x, penalization = 0.1, tol = 1e-04, maxiter = 200, sho
 			Q[, , k] = P[, 1:(J - 1), k] * D2[, 1:(J - 1)] - P[, 2:J, k] * (PIA[, 1:(J - 1)]/PIA[, 2:J]) * D2[, 2:J]
 			GR[k] = sum(D * U * Q[, , k])
 		}
-		# Expectation of the second derivative, (Fisher's scoring method is used)
+	# Expectation of the second derivative, (Fisher's scoring method is used)
 		HESS = matrix(0, npar, npar)
 		for (s in 1:npar) for (k in 1:npar) {
 			HESS[s, k] = sum(U * Q[, , s] * Q[, , k])
 		}
 		HESS = HESS + 2 * diag(J + p - 1) * penalization
 		Bnew = B + solve(HESS) %*% (GR - 2 * B * penalization)
-		error = sum((Bnew - B)^2)
+  	err = sum((Bnew - B)^2)
 		B = Bnew
 		A = matrix(B[1:(J - 1)], J - 1, 1)
 		Beta = matrix(B[J:(J + p - 1)], p, 1)
+		if(show) print(c(iter,err))
 	}
 
 	L = sum(R[, 1:(J - 1)] * Rho - R[, 2:J] * gRho)

@@ -15,13 +15,13 @@
 #  http://www.r-project.org/Licenses/
 #
 
-
-
+#This function check the data set to study keeping its information in a class
+#----------------------Parameters
+  #datanom: it could be a data.frame or a matrix with the nominal data
 CheckDataSet <- function(datanom){
 
-    typeDataFrame = FALSE     #Data are matrix
+    typeDataFrame = FALSE     
     nRowInit = nrow(datanom)
-    #If there are NA values, with this sentence we will drop the rows with any NA value
     datanom <- na.omit(datanom)
 
     nRow = nrow(datanom)
@@ -84,7 +84,6 @@ CheckDataSet <- function(datanom){
           }else{
             stop("Data set should be a data frame or a matrix")
           }
-    #In case that RowNames or ColNames are NULL we fix the name of the variables and rows
    	if (is.null(RowNames)){
   		RowNames <- rownames(datanom, do.NULL = FALSE, prefix = "I")
   		dimnames(datanom)[[1]] = RowNames
@@ -95,33 +94,29 @@ CheckDataSet <- function(datanom){
   		dimnames(datanom)[[2]] = ColNames
     }
 
-
-      numVarDef <- ncol(dataSet)
-      datanomcats = apply(dataSet[,1:numVarDef], 2, function(x) nlevels(as.factor(x)))
-      for(i in 1:numVarDef){
-        if(max(dataSet[,i]) > datanomcats[i]){
-          #print(paste("Please, it would be desirable that you recode variable ", i ,
-          #      " from the data set because its maximum value exceeds the distinct values it presents,
-          #      so there are some categories that are not present",sep=""))
-          columValuesOrd = sort(unique(dataSet[,i]))
-          print(paste("Variable ",dimnames(datanom)[[1]][i]," only take the values:",sep=""))
-          print(columValuesOrd)
-          ActLevelNames = NULL
-          newColdataSet = dataSet[,i]
-          for(j in 1:datanomcats[i]){
-              newColdataSet = replace(newColdataSet,newColdataSet==columValuesOrd[j],j)
-              if(typeDataFrame){
-                if(length(LevelNames[[i]]) > 0){
-                    ActLevelNames <- c(ActLevelNames,LevelNames[[i]][columValuesOrd[j]])
-                }
-              }else{
-                  ActLevelNames = columValuesOrd
+    numVarDef <- ncol(dataSet)
+    datanomcats = apply(dataSet[,1:numVarDef], 2, function(x) nlevels(as.factor(x)))
+    for(i in 1:numVarDef){
+      if(max(dataSet[,i]) > datanomcats[i]){
+        columValuesOrd = sort(unique(dataSet[,i]))
+        print(paste("Variable ",dimnames(datanom)[[1]][i]," only take the values:",sep=""))
+        print(columValuesOrd)
+        ActLevelNames = NULL
+        newColdataSet = dataSet[,i]
+        for(j in 1:datanomcats[i]){
+            newColdataSet = replace(newColdataSet,newColdataSet==columValuesOrd[j],j)
+            if(typeDataFrame){
+              if(length(LevelNames[[i]]) > 0){
+                  ActLevelNames <- c(ActLevelNames,LevelNames[[i]][columValuesOrd[j]])
               }
-          }
-          dataSet[,i] = newColdataSet
-          LevelNames[[i]] = ActLevelNames
+            }else{
+                ActLevelNames = columValuesOrd
+            }
         }
-      }#end for
+        dataSet[,i] = newColdataSet
+        LevelNames[[i]] = ActLevelNames
+      }
+    }
 
     dimnames(dataSet)[[1]] = RowNames
     dimnames(dataSet)[[2]] = ColNames
@@ -136,3 +131,6 @@ CheckDataSet <- function(datanom){
     return(data.ordinal)
 
 }
+
+
+

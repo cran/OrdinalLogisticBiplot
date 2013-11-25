@@ -8,7 +8,7 @@ This function computes, with an alternated algorithm, the row and column paramet
 }
 \usage{
 OrdinalLogBiplotEM(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 100,
-                  penalization = 0.2)
+                  penalization = 0.2,show=TRUE,initial=2,alfa=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -29,6 +29,15 @@ Maximum number of iterations in the process of solving the regression coefficien
 }
   \item{penalization}{
 Penalization used in the diagonal matrix to avoid singularities.
+}
+\item{show}{
+Boolean parameter to specify if the user wants to see every iteration.
+}
+\item{initial}{
+Method used to choose the initial ability in the algorithm.
+}
+\item{alfa}{
+Optional parameter to calculate row and column coordinates in Simple correspondence analysis if the initial parameter is equal to 1.
 }
 }
 

@@ -15,10 +15,9 @@
 #  http://www.r-project.org/Licenses/
 #
 
-
 OrdinalLogisticBiplot <- function(datanom,sFormula=NULL,numFactors=2,coordinates="EM",rotation="varimax",
                           metfsco="EAP",nnodos = 10, tol = 1e-04, maxiter = 100, penalization = 0.1,cte=TRUE,
-                          show=FALSE,ItemCurves = FALSE){
+                          show=TRUE,ItemCurves = FALSE,initial=2,alfa=1){
 
   #We have to check if datanom is a data frame or a matrix to tackle with sFormula parameter
   if(!(is.null(sFormula))){
@@ -35,6 +34,7 @@ OrdinalLogisticBiplot <- function(datanom,sFormula=NULL,numFactors=2,coordinates
     stop("It is not posible to reduce dimension because number of Factors is lower than variables in our data set")
   }
   dataSet = CheckDataSet(datanom)
+  #We have now in dataSet structure all our data, the names for the row and colums and de levels if exists
   datanom = dataSet$datanom
 
   nRowsdata <- dim(datanom)[1]
@@ -45,38 +45,60 @@ OrdinalLogisticBiplot <- function(datanom,sFormula=NULL,numFactors=2,coordinates
   x <- matrix(0,nRowsdata,numFactors)
   
   if (coordinates == "EM"){
-    olb = OrdinalLogBiplotEM(datanom,dim = numFactors, nnodos = nnodos, tol = tol, maxiter = maxiter, penalization = penalization)
-    catOrdBiplotPenal = GetOrdinalBiplotObjectPenal(dataSet$ColumNames,olb)
-    coefs = catOrdBiplotPenal$models$ColumnParameters$coefficients
-    thresholds = catOrdBiplotPenal$models$ColumnParameters$thresholds
-    x = catOrdBiplotPenal$models$RowCoordinates
-    VariableModels = catOrdBiplotPenal$matBiplot
-    Fitting = catOrdBiplotPenal$models$ColumnParameters$fit
-    LogLik = catOrdBiplotPenal$models$LogLikelihood
-    rotation="Not applicable"
-    metfsco="Not applicable"
+    olb = OrdinalLogBiplotEM(datanom,dim = numFactors, nnodos = nnodos, tol = tol, maxiter = maxiter,
+                               penalization = penalization,initial=initial,show=show,alfa=alfa)
+    coefs = olb$ColumnParameters$coefficients
+    thresholds = olb$ColumnParameters$thresholds
+    x = olb$RowCoordinates
+    Fitting = olb$ColumnParameters$fit
+    LogLik = olb$LogLikelihood        
+    FactorLoadings = olb$loadings
+    h2 = olb$r2
+    rotation="Not implemented"
+    metfsco="Not implemented"
 
-   }else if (coordinates == "MIRT"){           
-      rows = EstimationRowsMIRT(datanom,numFactors = numFactors,metfsco=metfsco,rotation=rotation)  #Se estima una vez y luego se elige el plano que queremos estudiar en GetOrdinalBiplotObjectMIRT
-      catOrdBiplot = GetOrdinalBiplotObjectMIRT(rows)        
-      x=catOrdBiplot$scores                   
-      VariableModels = catOrdBiplot$matBiplot
-      coefs = catOrdBiplot$sepCoefMirt$xCoeffic
-      thresholds = catOrdBiplot$sepCoefMirt$indCoeffic
-      Fitting = NULL
-      LogLik = NULL
+  }else if (coordinates == "MIRT"){ 
+      rows = EstimationRowsMIRT(datanom,numFactors = numFactors,metfsco=metfsco,rotation=rotation,maxiter=maxiter)  
+      fittedMirtModels = CalculateFittingIndicatorsMirt(rows)
+      x=rows$estimRows                   
+      coefs = rows$sepCoefMirt$xCoeffic
+      thresholds = rows$sepCoefMirt$indCoeffic
+      fittedInd = matrix(0,nColsdata,8)                
+      dimnames(fittedInd)[[1]]= dimnames(datanom)[[2]][1:dim(datanom)[2]]        
+      dimnames(fittedInd)[[2]]= c("logLik","Deviance","df","p-value","PCC","CoxSnell","Macfaden","Nagelkerke")  
+      sumLogLik = 0
+      for(i in 1:nColsdata){
+         fittedInd[i,]=c(fittedMirtModels[,i]$logLik,fittedMirtModels[,i]$Deviance,
+                            fittedMirtModels[,i]$df,fittedMirtModels[,i]$pval,
+                            fittedMirtModels[,i]$PercentClasif,fittedMirtModels[,i]$CoxSnell,
+                            fittedMirtModels[,i]$MacFaden,fittedMirtModels[,i]$Nagelkerke) 
+         sumLogLik = sumLogLik + fittedMirtModels[,i]$logLik
+      }
+      Fitting = fittedInd                                             
+      LogLik = sumLogLik
+      FactorLoadings = rows$summ$rotF
+      h2 = rows$summ$h2
       rotation=rotation
       metfsco=metfsco
       nnodos="Not applicable"
-  }
+      olb = rows
+  }                                                                                                               
   
-   dimnames(x)[[1]]=dimnames(datanom)[[1]]    #c(1:nRowsdata)
+   FactorLoadingsComm = cbind(FactorLoadings,h2)
+   dimnames(x)[[1]]=dimnames(datanom)[[1]]    
    dimnames(x)[[2]]=c(1:numFactors)
+   dimnames(coefs)[[1]] = dataSet$ColumNames
+   dimnames(coefs)[[2]] = paste(c(rep("Dim",numFactors)),c(1:numFactors))
+   dimnames(thresholds)[[1]] = dataSet$ColumNames
+   dimnames(thresholds)[[2]] = c(1:ncol(thresholds))
+   dimnames(FactorLoadingsComm)[[1]] = dataSet$ColumNames
+   dimnames(FactorLoadingsComm)[[2]] = c(paste(c(rep("F_",numFactors)),c(1:numFactors),sep=""),"Communalities")
 
     ordinal.logistic.biplot<-list()
     ordinal.logistic.biplot$dataSet = dataSet
     ordinal.logistic.biplot$ItemsCoords = x
-    ordinal.logistic.biplot$VariableModels = VariableModels
+    ordinal.logistic.biplot$Ncats = datanomcats
+    ordinal.logistic.biplot$estimObject = olb
     ordinal.logistic.biplot$Fitting = Fitting 
     ordinal.logistic.biplot$coefs = coefs  
     ordinal.logistic.biplot$thresholds = thresholds   
@@ -92,38 +114,52 @@ OrdinalLogisticBiplot <- function(datanom,sFormula=NULL,numFactors=2,coordinates
     ordinal.logistic.biplot$show = show
     ordinal.logistic.biplot$ItemCurves =  ItemCurves
     ordinal.logistic.biplot$LogLik =  LogLik
+    ordinal.logistic.biplot$FactorLoadingsComm = FactorLoadingsComm    
 
     class(ordinal.logistic.biplot)='ordinal.logistic.biplot'
     return(ordinal.logistic.biplot)
 }
 
-summary.ordinal.logistic.biplot <- function(object,...) {
-      x = object
-
+summary.ordinal.logistic.biplot <- function(object,data = FALSE,itemCoords = FALSE,...) {
+      x = object  
       if(x$Coordinates == "EM"){
-         	cat(paste("Ordinal Logistic Biplot Estimation", "with Ridge Penalizations", x$penalization, " and logit link"), "\n")        
-         	cat("logLikelihood: ", x$LogLik, "\n")
-         	cat("\n\nPercentage of correct classifications and Pseudo R-squared measures: \n")
+         	cat(paste(" Ordinal Logistic Biplot Estimation ", "with Ridge Penalization :", x$penalization, ", EM algorithm and logit link"), "\n")        
+         	cat("\n Percentage of correct classifications,Pseudo R-squared measures and other indicators: \n")
          	print(x$Fitting)
       }else{
-         	cat(paste("Ordinal Logistic Biplot Estimation", "with MIRT method"), "\n")
+         	cat(paste(" Ordinal Logistic Biplot Estimation ", "using MIRT method"), "\n")
           cat(paste("Rotation", x$Rotation), "\n")
-          cat(paste("Method of fscores calculation:", x$Methodfscores), "\n")    
+          cat(paste("Method of fscores calculation:", x$Methodfscores), "\n")
+         	cat("\n Percentage of correct classifications,Pseudo R-squared measures and other indicators: \n")          
+         	print(x$Fitting)
       }
-    	cat("n: ", nrow(x$dataSet$datanom), "\n")
-    	cat("Coordinates for the individuals: ","\n")
-      print(x$ItemsCoords)
+      cat(paste("\n Number of factors for the reduced solution:",x$NumFactors,"\n",sep=""))
+
+      if(data){                                                     
+    	   cat("n: ", nrow(x$dataSet$datanom), "\n")
+    	}
+    	if(itemCoords){
+    	   cat("Coordinates for the individuals: ","\n")    	
+         print(x$ItemsCoords)
+      }
+      cat("\n Number of categories of the variables:\n")
+     	print(x$Ncats)                                                                   
      	cat("\n Coefficients:\n")
      	print(x$coefs)
      	cat("\n Thresholds:\n")
      	print(x$thresholds)
+     	cat("\n Factor Loadings and Communalities:\n")
+     	print(x$FactorLoadingsComm)
+    	
 }
 
 plot.ordinal.logistic.biplot <- function(x,planex=1,planey=2,AtLeastR2 = 0.01,
         xlimi=-1.5,xlimu=1.5,ylimi=-1.5,ylimu=1.5,margin = 0,
         ShowAxis = TRUE, PlotVars = TRUE, PlotInd = TRUE, LabelVar = TRUE,
         LabelInd = TRUE,CexInd = NULL, CexVar = NULL, ColorInd = NULL, ColorVar = NULL,
-        PchInd = NULL, PchVar = NULL,showIIC=FALSE,iicxi=-1.5,iicxu=1.5,legendPlot = FALSE,...) {
+        PchInd = NULL, PchVar = NULL,showIIC=FALSE,iicxi=-1.5,iicxu=1.5,
+        legendPlot = FALSE,PlotClus = FALSE,Clusters=NULL,chulls = TRUE,centers = TRUE,
+        colorCluster = NULL,ConfidentLevel=NULL,addToExistingPlot=FALSE,...) {
   olbo = x
   n = nrow(olbo$dataSet$datanom)
 	p = ncol(olbo$dataSet$datanom)
@@ -196,6 +232,7 @@ plot.ordinal.logistic.biplot <- function(x,planex=1,planey=2,AtLeastR2 = 0.01,
              PchVar = PchVar[1:p]
            }
   }
+
   if (is.null(ColorVar)){
 		ColorVar = colors()[20 + 2*c(1:p)]
 	}else{
@@ -225,46 +262,95 @@ plot.ordinal.logistic.biplot <- function(x,planex=1,planey=2,AtLeastR2 = 0.01,
   ymin= ylimi - (ylimu - ylimi) * margin
   ymax= ylimu + (ylimu - ylimi) * margin
 
-  dev.new()
   if(PlotInd == TRUE){
-    plot(olbo$ItemsCoords[,planex], olbo$ItemsCoords[,planey], cex = CexInd, col=ColorInd, pch = PchInd, asp=1, xaxt = xaxt, yaxt = yaxt ,xlim=c(xmin,xmax),ylim=c(ymin,ymax),
-        main="Ordinal Logistic Biplot", xlab=paste("Axis ",planex,sep=""), ylab=paste("Axis ",planey,sep=""))
+    if(addToExistingPlot == TRUE){
+      points(olbo$ItemsCoords[,planex], olbo$ItemsCoords[,planey], pch = PchInd, col=ColorInd, cex = CexInd)
+    }else{
+      dev.new()
+      plot(olbo$ItemsCoords[,planex], olbo$ItemsCoords[,planey], cex = CexInd, col=ColorInd, pch = PchInd, asp=1, xaxt = xaxt, yaxt = yaxt ,xlim=c(xmin,xmax),ylim=c(ymin,ymax),
+        main="Ordinal Logistic Biplot", xlab=paste("Axis ",planex,sep=""), ylab=paste("Axis ",planey,sep=""))        
+    }
+    
     if(LabelInd == TRUE){
          text(olbo$ItemsCoords[,planex], olbo$ItemsCoords[,planey],row.names(RowNames), cex = CexInd,col=ColorInd,pos=1,offset=0.1)
     }
   }else{
-     plot(olbo$ItemsCoords[,planex], olbo$ItemsCoords[,planey], cex = 0,asp=1, xaxt = xaxt, yaxt = yaxt ,xlim=c(xmin,xmax),ylim=c(ymin,ymax),
+    if(!addToExistingPlot){
+      plot(olbo$ItemsCoords[,planex], olbo$ItemsCoords[,planey], cex = 0,asp=1, xaxt = xaxt, yaxt = yaxt ,xlim=c(xmin,xmax),ylim=c(ymin,ymax),
         main="Ordinal Logistic Biplot", xlab=paste("Axis ",planex,sep=""), ylab=paste("Axis ",planey,sep=""))
+    }
+  }
+
+  if(olbo$Coordinates == "EM"){
+      olb = olbo$estimObject
+      catOrdBiplotPenal = GetOrdinalBiplotObjectPenal(olbo$dataSet$ColumNames,olb,planex,planey)
+  }else{
+      if(olbo$Coordinates == "MIRT"){
+           rows = olbo$estimObject
+           catOrdBiplot = GetOrdinalBiplotObjectMIRT(rows,planex,planey)
+      }else{
+          stop("Coordinates for the items has not been specified.")
+      }
   }
 
   if(PlotVars){
       if(olbo$Coordinates == "EM"){
         D = 1
+        plot.ordinalBiplotPenal(catOrdBiplotPenal,olbo$NumFactors,D,planex,planey,xi=xlimi,xu=xlimu,
+              yi=ylimi,yu=ylimu,margin = margin, CexVar = CexVar,ColorVar = ColorVar,
+              PchVar = PchVar,levelsVar = olbo$dataSet$LevelNames)
       }else{
         D = 1.702
-      }
-      plot.ordinalBiplotPenal(olbo,D,planex,planey,xi=xlimi,xu=xlimu,
+        plot.ordinalBiplotPenal(catOrdBiplot,olbo$NumFactors,D,planex,planey,xi=xlimi,xu=xlimu,
               yi=ylimi,yu=ylimu,margin = margin, CexVar = CexVar,ColorVar = ColorVar,
-              PchVar = PchVar)
+              PchVar = PchVar,levelsVar = olbo$dataSet$LevelNames)
+      }
       if(legendPlot){
         legend("bottomright", legend=VarNames, col= ColorVar,pch=PchVar,cex=0.7)
       }
   }
   
+  if (PlotClus) {
+    if (is.null(Clusters)){
+      Clusters=as.factor(ones(c(n,1)))
+    }else{
+      Clusters=Clusters
+    }
+    A = cbind(olbo$ItemsCoords[,planex],olbo$ItemsCoords[,planey])
+    if(!is.null(colorCluster)){
+        col = colorCluster
+    }else{
+        col = colors()[20 + 2*c(1:length(levels(Clusters)))]
+    }
+    if(!is.null(ConfidentLevel)){
+      if((ConfidentLevel < 0) | (ConfidentLevel > 1)){
+         stop("The ConfidentLevel parameter has not a valid value. It should be between 0 and 1") 
+      }
+    }
+    PlotClusterVariable(A, Clusters, colors = col, chulls = chulls,centers = centers,ConfidentLevel=ConfidentLevel)
+  }
+  
   if(showIIC){
     for(v in 1:ncol(olbo$dataSet$datanom)){
       nameVariable = VarNames[v]
-      coeffic = olbo$VariableModels[,v]$coef
-      slopeort = olbo$VariableModels[,v]$slope
-      D = 1
+      if(olbo$Coordinates == "EM"){
+          coeffic = catOrdBiplotPenal$matBiplot[,v]$coef
+          slopeort = catOrdBiplotPenal$matBiplot[,v]$slope
+          D = 1
+      }else{
+          if(olbo$Coordinates == "MIRT"){
+              coeffic = catOrdBiplot$matBiplot[,v]$coef
+              slopeort = catOrdBiplot$matBiplot[,v]$slope
+              D = 1.702
+          }else{
+              stop("Coordinates for the items has not been specified.")
+          }        
+      }
       numcat = max(olbo$dataSet$datanom[,v])
       xi = iicxi
       xu = iicxu
-      if(olbo$Coordinates == "MIRT"){
-        D = 1.702
-      }
       plotCurvesCategoriesVariable(coeffic,slopeort,D,numcat,nameVariable,xi,xu,planex,planey)
     }
   }
-  
+
 }

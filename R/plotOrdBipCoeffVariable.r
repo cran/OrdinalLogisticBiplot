@@ -16,9 +16,9 @@
 #
 
 
-plotOrdBipCoeffVariable <- function(x,coeffic,D = 1,planex = 1,planey = 2,xi=-3.5,xu=3.5,yi=-3.5,yu=3.5,
+plotOrdBipCoeffVariable <- function(nameVariable,coeffic,D = 1,planex = 1,planey = 2,xi=-3.5,xu=3.5,yi=-3.5,yu=3.5,
         margin=0,numFactors = 2,CexVar=0.7,ColorVar="blue",PchVar=0.7,addToPlot=FALSE,showIIC = TRUE,iicxi=-2.5,iicxu=2.5){
-   nameVariable = x
+
    numcat = length(coeffic) - numFactors + 1
    ordBipVar = CalculateOrdinalBiplotGeneral(nameVariable,numcat,coeffic,planex,planey,numFactors,D)
 
@@ -36,3 +36,4 @@ plotOrdBipCoeffVariable <- function(x,coeffic,D = 1,planex = 1,planey = 2,xi=-3.
    }
 
 }
+

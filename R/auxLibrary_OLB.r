@@ -16,17 +16,54 @@
 #
 
 
-plot.ordinalBiplotPenal <- function(olbo,D=1,planex=1,planey=2,xi=-3.5,xu=3.5,yi=-3.5,yu=3.5,
-       margin = 0, CexVar,ColorVar, PchVar) {
+zeros <- function(dims){
+   if(is.vector(dims)){ 
+     if(length(dims) < 2){
+        stop("Zeros function parameter with only one dimension.")
+     }else{
+        if(length(dims) > 2){
+            print("Too much dimensions passed to zeros function. It will choose the first two")
+            dims = dims[1:2]
+            ret = matrix(0,dims[1],dims[2])
+        }else{ 
+            ret = matrix(0,dims[1],dims[2])
+        }
+     }
+   }else{
+      stop("Zeros function must receive a vector parameter")
+   }
+   return (ret)
+}
 
-    nColsdataF <- ncol(olbo$dataSet$datanom)
+ones <- function(dims){
+   if(is.vector(dims)){ 
+     if(length(dims) < 2){
+        stop("Ones function parameter with only one dimension.")
+     }else{
+        if(length(dims) > 2){
+            print("Too much dimensions passed to Ones function. It will choose the first two")
+            dims = dims[1:2]
+            ret = matrix(1,dims[1],dims[2])
+        }else{ 
+            ret = matrix(1,dims[1],dims[2])
+        }
+     }
+   }else{
+      stop("Ones function must receive a vector parameter")
+   }
+   return (ret)
+}
+
+
+plot.ordinalBiplotPenal <- function(catOrdBiplotPenal,numFactors,D=1,planex=1,planey=2,xi=-3.5,xu=3.5,yi=-3.5,yu=3.5,
+       margin = 0, CexVar,ColorVar, PchVar,levelsVar) {
+
+    nColsdataF <- ncol(catOrdBiplotPenal$matBiplot)
 
     for(nvarColum in 1:nColsdataF){
-      datanom = olbo$dataSet$datanom
-      ordBipVar = olbo$VariableModels[,nvarColum]
-      numFactors = olbo$NumFactors
+      ordBipVar = catOrdBiplotPenal$matBiplot[,nvarColum]
       plot.ordBipVariable(ordBipVar,D,planex,planey,xi,xu,yi,yu,margin,numFactors,CexVar[nvarColum],
-                          ColorVar[nvarColum],PchVar[nvarColum],levelsVar = olbo$dataSet$LevelNames[[nvarColum]])
+                ColorVar[nvarColum],PchVar[nvarColum],levelsVar = levelsVar[[nvarColum]])        
     }
 }
 
@@ -38,7 +75,6 @@ plot.ordBipVariable <- function(ordBipVar,D,planex,planey,xi,xu,yi,yu,margin,
    abline(0,ordBipVar$slope,lty=1,col=ColorVar)
 
    pointsBoxVarName = pointsIntersectLineWindow(ordBipVar$slope,xi,xu,yi,yu)
-
    if(ordBipVar$order == TRUE){
       xi = min(ordBipVar$pointsc[,1]-1)
       xu = max(ordBipVar$pointsc[,1]+1)
@@ -95,8 +131,7 @@ plot.ordBipVariable <- function(ordBipVar,D,planex,planey,xi,xu,yi,yu,margin,
             text(pointsBoxVarName[1,1],pointsBoxVarName[1,2],ordBipVar$var,pos=1,offset=0.1, srt = ang,cex=CexVar,col=ColorVar)
           }
         }
-     }#end for
-
+     }
    }else{
        for(m in 1:(numcat-1)){
          if(ordBipVar$pointprob[m,1] > 0){
@@ -168,7 +203,7 @@ isOrderCurvesAscent <- function(ordBipVar,D=1,planex=1,planey=2){
     }else{
       x = max(ordBipVar$pointprob[,2]) + 1
     }
-    yFirstCurve = 1/(1 + exp(D*(coeffic[planex]*x + coeffic[planey]*(ordBipVar$slope*x)- coeffic[numFactors + 1])))
+    yFirstCurve = 1/(1 + exp(D*(coeffic[planex]*x + coeffic[planey]*(ordBipVar$slope*x) - coeffic[numFactors + 1])))
     yLastCurve = 1/(1 + exp(-D*(coeffic[planex]*x + coeffic[planey]*(ordBipVar$slope*x) - coeffic[numFactors + numcat - 1])))
     if(yFirstCurve > yLastCurve){
         result = FALSE
@@ -178,22 +213,30 @@ isOrderCurvesAscent <- function(ordBipVar,D=1,planex=1,planey=2){
     return (result)
 }
 
-
 plotCurvesCategoriesVariable <- function(coeffic,slopeort,D,numcat,nameVariable,xi,xu,planex,planey){
     dev.new()
     x<-seq(xi,xu,length=1000)
+    y = slopeort * x
+    z = sqrt(x^2 + y^2)
+    escProd = x*coeffic[planex] + y*coeffic[planey]
+    signPos = as.numeric(escProd >= 0)
+    signNeg = as.numeric(escProd < 0)
+    signZ = signPos - signNeg
     numFactors = length(coeffic) - numcat + 1
+    abcissa = z*signZ
     fx = 1/(1 + exp(D*(coeffic[planex]*x + coeffic[planey]*(slopeort*x) - coeffic[numFactors + 1])))
-    plot(x,fx,type="l",cex=0.1,ylim=c(0,1),main=paste("Curves of the variable:", nameVariable,sep=""))
-    if(numcat > 2){    
+    plot(abcissa,fx,type="l",cex=0.1,xlim=c(xi,xu),ylim=c(0,1),main=paste("Curves of the variable:", nameVariable,sep=""))
+    #testit(2)
+    if(numcat > 2){
       for(s in 2:(numcat - 1)){
           y = (1/(1 + exp(D*(coeffic[planex]*x + coeffic[planey]*(slopeort*x) - coeffic[numFactors + s])))) -
               (1/(1 + exp(D*(coeffic[planex]*x + coeffic[planey]*(slopeort*x) - coeffic[numFactors + s - 1]))))
-          points(x,y,type="l")
+          points(z*signZ,y,type="l")
+          #testit(2)
       }
     }
     ylast = 1- 1/(1 + exp(D*(coeffic[planex]*x + coeffic[planey]*(slopeort*x) - coeffic[numFactors + numcat - 1])))
-    points(x,ylast,type="l")
+    points(z*signZ,ylast,type="l")
 
 }
 
@@ -202,7 +245,6 @@ testit <- function(x){
   Sys.sleep(x)
   proc.time() - p1
 }
-
 
 CalculateMediaBetPoints <- function(orderPointsJoin){
     rows = nrow(orderPointsJoin)
@@ -261,31 +303,6 @@ Eq2gSolve <- function(a,b,c){
     solns
 }
 
-GetOrdinalBiplotObjectPenal <- function(ColumNames,olb,planex=1,planey=2){
-
-    nColsdataF <- nrow(olb$Ncats)
-    numFactors = ncol(olb$RowCoordinates)
-
-    matBiplot=0
-    for(nvarColum in 1:nColsdataF){
-      numcat = olb$Ncats[nvarColum,1]
-      coeffic = ExtractCoefficientsPenal(olb,nvarColum,numFactors,numcat)
-      D = 1
-      nameVariable = ColumNames[nvarColum]
-      ordBipVar = CalculateOrdinalBiplotGeneral(nameVariable,numcat,coeffic,planex,planey,numFactors,D)
-
-      matBiplot=cbind(matBiplot,ordBipVar)
-    }
-
-    matBiplot=matBiplot[,2:(nColsdataF+1)]
-
-    result = list()
-    result$models = olb
-  	result$matBiplot = matBiplot
-  	class(result) <- "CategOrdBiplotPen"
-  	return(result)
-}
-
 ExtractCoefficientsPenal <- function(olb,nvarColum,numFactors,numcat)
 {
    coeffic = matrix(0,1,numFactors + numcat - 1)
@@ -297,73 +314,6 @@ ExtractCoefficientsPenal <- function(olb,nvarColum,numFactors,numcat)
    }
 
    return(coeffic)
-}
-
-
-GetOrdinalBiplotObjectMIRT <- function(modelMirt,planex=1,planey=2,plotCurves=FALSE,xi=-3.5,xu=3.5){
-
-    nColsdataF <- ncol(modelMirt$dataFactor)
-    varStudy = modelMirt$dataFactor
-
-    matBiplot=0
-    for(nvarColum in 1:nColsdataF){
-      numcat = max(varStudy[,nvarColum])
-      coeffic=modelMirt$coefMirt[[nvarColum]]
-      numFactors = length(coeffic)- (numcat - 1)
-      coeffic = c(modelMirt$coefMirt[[nvarColum]][1:numFactors],(-1)*modelMirt$coefMirt[[nvarColum]][(numFactors+1):length(coeffic)])
-      D=1.702
-      nameVariable = dimnames(varStudy)[[2]][nvarColum]
-      ordBip = CalculateOrdinalBiplotGeneral(nameVariable,numcat,coeffic,planex,planey,modelMirt$numFactors,D,plotCurves=plotCurves,xi=xi,xu=xu)
-      matBiplot=cbind(matBiplot,ordBip)
-    }
-    matBiplot=matBiplot[,2:(nColsdataF+1)]
-
-    result = list()
-    result$coefMirt = modelMirt$coefMirt
-    result$sepCoefMirt = modelMirt$sepCoefMirt
-    result$numFactors = modelMirt$numFactors
-    result$rotation = modelMirt$rotation
-    result$metfsco = modelMirt$metfsco
-    result$planex = planex
-    result$planey = planey
-  	result$scores = modelMirt$estimRows
-    result$matBiplot = matBiplot
-    result$summaryMirt = modelMirt$summ
-  	class(result) <- "CategOrdBiplot"
-  	return(result)
-}
-
-EstimationRowsMIRT <- function(dataFile,numFactors=2,metfsco="EAP",rotation="varimax")
-{
-  nRowsdataF <- dim(dataFile)[1]
-  nColsdataF <- dim(dataFile)[2]
-  varStudy = matrix(0,nRowsdataF,nColsdataF)
-  for(i in 1:nColsdataF){
-    varStudy[,i]= factor(dataFile[,i])
-  }
-  dimnames(varStudy)[[2]]=dimnames(dataFile)[[2]]
-  datanomcats = apply(varStudy, 2, function(x) nlevels(as.factor(x)))
-
-  (modF<-mirt(varStudy,numFactors,rotate=rotation))
-  summ = summary(modF)
-
-  tabscores<-fscores(modF,full.scores=TRUE,method=metfsco)
-  xSubi = tabscores[,(nColsdataF+1):(nColsdataF+numFactors)]
-  catsVarMax = max(datanomcats)
-  sepCoefMirt = ExtractMirtCoefficients(catsVarMax,cmodF = coef(modF),numFactors = numFactors)
-
-  result = list()
-  result$estimRows = xSubi
-	result$dataFactor = varStudy
-	result$rotation = rotation
-	result$metfsco = metfsco
-	result$numFactors = numFactors
-	result$coefMirt = coef(modF)
-	result$sepCoefMirt = sepCoefMirt
-  result$summ = summ
-	class(result) <- "EstimationRowsMIRT"
-	return(result)
-
 }
 
 ExtractMirtCoefficients <- function(catsVarMax,cmodF,numFactors)
@@ -388,14 +338,26 @@ ExtractMirtCoefficients <- function(catsVarMax,cmodF,numFactors)
 
 }
 
-CalculateOrdinalBiplotGeneral <- function(nameVariable,numcat,coeffic,planex,planey,numFactors,D,plotCurves,xi,xu){
+CalculateOrdinalBiplotGeneral <- function(nameVariable,numcat,coeffic,planex,planey,numFactors,D){
    orderPoints=TRUE     
 
-   slope = (-1)*coeffic[planex]/coeffic[planey]
-   ordorig=matrix(0,1,numcat-1)
+   if((coeffic[planex] == 0) & (coeffic[planey] == 0)){
+      stop(paste("Coefficients estimated for the variable ",nameVariable," on the plane ",planex,"-",planey," are zero and it is not posible to calculate the biplot",sep=""))
+   }
+
+   if(coeffic[planey] == 0){
+       slope = NA 
+   }else{
+       slope = (-1)*coeffic[planex]/coeffic[planey]
+   }
+    ordorig=matrix(0,1,numcat-1)
 
    if(numcat > 2){
-     ordorig[1] = ((-1)/D)*log(exp((-1)*D*coeffic[numFactors+1])- 2*exp((-1)*D*coeffic[numFactors+2]))
+     if((exp((-1)*D*coeffic[numFactors+1])- 2*exp((-1)*D*coeffic[numFactors+2])) <= 0){
+        ordorig[1]= NA
+     }else{
+        ordorig[1] = ((-1)/D)*log(exp((-1)*D*coeffic[numFactors+1])- 2*exp((-1)*D*coeffic[numFactors+2]))     
+     }
      if((numcat-2) > 1){
        for(j in 2:(numcat-2)){
            num= exp((-1)*D*coeffic[j-1+numFactors])-2*exp((-1)*D*coeffic[j+numFactors])+
@@ -404,7 +366,7 @@ CalculateOrdinalBiplotGeneral <- function(nameVariable,numcat,coeffic,planex,pla
                         (-2)*exp((-1)*D*(coeffic[j-1+numFactors]+coeffic[j+1+numFactors]))+
                           exp((-1)*D*(coeffic[j+1+numFactors]+coeffic[j+numFactors]))
            if((num/denom) < 0){
-              ordorig[j]= -99999  
+              ordorig[j]= NA  
            }else{
               ordorig[j]= (1/D)*log(num/denom)
            }                          
@@ -413,39 +375,75 @@ CalculateOrdinalBiplotGeneral <- function(nameVariable,numcat,coeffic,planex,pla
      num= exp((-1)*D*coeffic[numcat -2 +numFactors])-2*exp((-1)*D*coeffic[numcat -1 +numFactors]);
      denom = exp((-1)*D*(coeffic[numcat -2+numFactors]+coeffic[numcat -1+numFactors]));
      if((num/denom) < 0){
-        ordorig[numcat -1]= -99999  
+        ordorig[numcat -1]= NA   
      }else{
         ordorig[numcat -1]= (1/D)*log(num/denom)     
      }                               
    }else if(numcat == 2){
-             ordorig[1] = (coeffic[1+numFactors]+coeffic[numcat-1+numFactors])/2
+            ordorig[1] = (coeffic[1+numFactors]+coeffic[numcat-1+numFactors])/2
          }else{
             stop("There is a variable with the same value for all the items. Revise the data set.")
          }
-
-   slopeort = -1/slope
+         
+   if(!is.na(slope)){
+      if(slope == 0){
+          slopeort = NA
+      }else{
+          slopeort = -1/slope
+      }      
+   }else{
+      slopeort = 0
+   }
 
    pointprob=matrix(0,numcat-1,5)
 
    pointsc=matrix(0,numcat -1,2)
-   for(k in 1:numcat -1){
-      pointsc[k,1]= ordorig[k]/((slopeort-slope)*(coeffic[planey]))
-      pointsc[k,2]= slopeort*pointsc[k,1]
-   }
-
-   orddescendent = TRUE  #Se inicializa a este valor
-   ordPointsc = sort(pointsc[,1])
-   for(p in 1:(numcat -1)){
-      if(pointsc[p,1] !=  ordPointsc[numcat-p]){
-          orddescendent = FALSE
+   for(k in 1:(numcat -1)){
+      if(!is.na(ordorig[k])){
+        if(coeffic[planey] == 0){
+            pointsc[k,1] = ordorig[k]/coeffic[planex]
+            pointsc[k,2] = 0            
+        }else{
+          if(coeffic[planex] == 0){
+              pointsc[k,1] = 0
+              pointsc[k,2] = ordorig[k]/coeffic[planey]            
+          }else{
+              pointsc[k,1]= ordorig[k]/((slopeort-slope)*(coeffic[planey]))
+              pointsc[k,2]= slopeort*pointsc[k,1]     
+          }
+        }
+      }else{
+        pointsc[k,1] = NA
+        pointsc[k,2] = NA
       }
    }
-   if((all(ordPointsc == t(pointsc[,1]))==FALSE)&&(orddescendent == FALSE)){
-       orderPoints=FALSE
 
+   if(length(sort(ordorig)) != length(ordorig)){
        pointprobFull = PointsCurveIntersect(coeffic,numcat,planex,planey,D)
        pointprob = PointsBiplotCurves(pointprobFull,numcat)
+       orderPoints=FALSE
+   }else{
+       orddescendent = TRUE  
+       if(coeffic[planex] == 0){
+          compareColumn = 2
+       }else{
+          compareColumn = 1
+       }
+       ordPointsc = sort(pointsc[,compareColumn])
+       for(p in 1:(numcat -1)){
+          if(pointsc[p,compareColumn] !=  ordPointsc[numcat-p]){
+              orddescendent = FALSE
+          }
+       }
+       if((all(ordPointsc == t(pointsc[,compareColumn]))==FALSE)
+                                        &&(orddescendent == FALSE)){
+           orderPoints=FALSE
+    
+           pointprobFull = PointsCurveIntersect(coeffic,numcat,planex,planey,D)
+           pointprob = PointsBiplotCurves(pointprobFull,numcat)
+       }
    }
+   
    vectcos = matrix(0,1,numFactors)
    denomCosines = 0
    for(n in 1:numFactors){
@@ -470,7 +468,7 @@ CalculateOrdinalBiplotGeneral <- function(nameVariable,numcat,coeffic,planex,pla
 
 PointsCurveIntersect <- function(coeffic,numcat,planex,planey,D){
   numFactors = length(coeffic) - (numcat - 1)
-  pointprobFull = matrix(0,numcat*(numcat-1),5)
+  pointprobFull = matrix(0,numcat*(numcat-1)/2,5)
   posInsert = 0
           #1-n
           #1-2
@@ -483,7 +481,7 @@ PointsCurveIntersect <- function(coeffic,numcat,planex,planey,D){
     for(j in (i + 1):numcat){
          if(i == 1){
             if(j == numcat){
-                #caso 1-n
+                #case 1-n
                  posInsert = posInsert + 1
                  pointprobFull[posInsert,1]= 1/(1+exp(D*((coeffic[numcat-1+numFactors] - coeffic[1+numFactors])/2)))
                  pointprobFull[posInsert,2]= (coeffic[planex]*(coeffic[numcat-1+numFactors]+coeffic[1+numFactors]))/(2*(coeffic[planex]^2+coeffic[planey]^2))
@@ -491,22 +489,27 @@ PointsCurveIntersect <- function(coeffic,numcat,planex,planey,D){
                  pointprobFull[posInsert,4] = 1
                  pointprobFull[posInsert,5] = numcat
             }else{
-                 if(j==2){
-                      posInsert = posInsert + 1
-                      #caso 1-2
-                      oo12 = ((-1)/D)*log(exp((-1)*D*coeffic[numFactors+1])
-                                  - 2*exp((-1)*D*coeffic[numFactors+2]))
-                      corteProb12 = 1/(1+exp(D*(oo12 - coeffic[1+numFactors])))
-                      #El 1-2
-                      pointprobFull[posInsert,1]= corteProb12
-                      pointprobFull[posInsert,2]= (coeffic[planex]*oo12)/(coeffic[planex]^2+coeffic[planey]^2)
-                      pointprobFull[posInsert,3]= (coeffic[planey]*oo12)/(coeffic[planex]^2+coeffic[planey]^2)
-                      pointprobFull[posInsert,4]= 1
-                      pointprobFull[posInsert,5]= 2
+                 if(j==2){    
+                      #case 1-2
+                      if((exp((-1)*D*coeffic[numFactors+1])
+                                    - 2*exp((-1)*D*coeffic[numFactors+2]))>0){
+                        posInsert = posInsert + 1 
+                        oo12 = ((-1)/D)*log(exp((-1)*D*coeffic[numFactors+1])
+                                    - 2*exp((-1)*D*coeffic[numFactors+2]))
+                        corteProb12 = 1/(1+exp(D*(oo12 - coeffic[1+numFactors])))
+                        #El 1-2
+                        pointprobFull[posInsert,1]= corteProb12
+                        pointprobFull[posInsert,2]= (coeffic[planex]*oo12)/(coeffic[planex]^2+coeffic[planey]^2)
+                        pointprobFull[posInsert,3]= (coeffic[planey]*oo12)/(coeffic[planex]^2+coeffic[planey]^2)
+                        pointprobFull[posInsert,4]= 1
+                        pointprobFull[posInsert,5]= 2                                             
+                      }else{
+                        print(paste("Curves 1-",j," do not intersect at any point.",sep=""))                                      
+                      }
                  }else{
-                    #caso 1-j, con j#numcat, e j > 1 
+                    #case 1-j, con j#numcat, e j > 1 
                      categ = j                     
-                       #(e(-D(d1+di-1))-e(-D(d1+di))-e(-D(di-1+di)))x^2-2e(-D*di)x -1=0
+                      #(e(-D(d1+di-1))-e(-D(d1+di))-e(-D(di-1+di)))x^2-2e(-D*di)x -1=0
                       a= exp((-1)*D*(coeffic[1+numFactors]+coeffic[categ-1+numFactors]))-exp((-1)*D*(coeffic[1+numFactors]+coeffic[categ+numFactors]))-exp((-1)*D*(coeffic[categ-1+numFactors]+coeffic[categ+numFactors]))
                       b= (-2)*exp((-1)*D*coeffic[categ+numFactors])
                       c= -1
@@ -520,11 +523,11 @@ PointsCurveIntersect <- function(coeffic,numcat,planex,planey,D){
                         print(paste("Curves 1-",categ," do not intersect at any point",sep=""))              
                         xsolve = -1
                       }
-                      #Ahora miro cual es la probabilidad donde P(X=1)=P(X=categ)
+                      #P(X=1)=P(X=categ)
                       if(xsolve > 0){
                           posInsert = posInsert + 1
                           oo1i=(1/D)*log(xsolve)
-                          corteProb = 1/(1+(exp(D*(oo1i-coeffic[1+numFactors]))))  #Este es el corte con la 1, que no coinciden                                            
+                          corteProb = 1/(1+(exp(D*(oo1i-coeffic[1+numFactors]))))  
                           pointprobFull[posInsert,1]= corteProb
                           pointprobFull[posInsert,2]= (coeffic[planex]*oo1i)/(coeffic[planex]^2+coeffic[planey]^2)
                           pointprobFull[posInsert,3]= (coeffic[planey]*oo1i)/(coeffic[planex]^2+coeffic[planey]^2)
@@ -536,7 +539,7 @@ PointsCurveIntersect <- function(coeffic,numcat,planex,planey,D){
          }else{
             if(j == numcat){
               if(i == (numcat -1)){
-                #caso (n-1)-n                
+                #case (n-1)-n                
                 oonm1n = (exp((-1)*D*coeffic[numcat - 2 + numFactors])- 2*exp((-1)*D*coeffic[numcat - 1 +numFactors]))/
                               (exp((-1)*D*(coeffic[numcat - 1 + numFactors] + coeffic[numcat - 2 + numFactors])))
                 if(oonm1n > 0){
@@ -551,7 +554,7 @@ PointsCurveIntersect <- function(coeffic,numcat,planex,planey,D){
                     print(paste("Curves ",numcat-1,"-",numcat," do not intersect at any point",sep=""))
                 }
               }else{
-                #caso i-n
+                #case i-n
                 categ  = i                
                 #P(X=categ)=P(X=numcat)
                 #(e(-D(di-1+di+dn-1))x^2+2e(-D*(di+dn-1))x+(e(-Ddn-1)+e(-Ddi)-e(-Ddi-1)))=0
@@ -606,6 +609,7 @@ PointsCurveIntersect <- function(coeffic,numcat,planex,planey,D){
                       print(paste("Curves ",i,"-",i+1," do not intersect at any point",sep=""))
                    }
                 }else{
+                    #caso i-j, con i#j y j>(i+1)
                     categ = j
                     jcomp = i
                     a= exp((-1)*D*(coeffic[categ-1+numFactors]+coeffic[jcomp-1+numFactors]+coeffic[jcomp+numFactors]))-
@@ -660,18 +664,22 @@ SeekRowCompleteProb <- function(pointprobFull,coef1,coef2){
 
 PointsBiplotCurves <- function(pointprobFull,numcat){
 
+      axisOrthogonal = FALSE
+      if((all(as.integer(pointprobFull[,2]))==0)==TRUE){
+          axisOrthogonal = TRUE
+      }
+  
       pointprob = matrix(0,nrow(pointprobFull),5)
       rowpointprob = 1  
       catref = 1
       ordyprobref = 0
-      for(s in 1:(numcat*(numcat -1))){
+      for(s in 1:(numcat*(numcat -1)/2)){
          if((pointprobFull[s,4] == 1) &&
             (pointprobFull[s,1] > ordyprobref)){
             ordyprobref = pointprobFull[s,1]
             fila = s
          }
       }
-
      pointprob[1,1] = pointprobFull[fila,1]
      pointprob[1,2] = pointprobFull[fila,2]
      pointprob[1,3] = pointprobFull[fila,3]
@@ -679,10 +687,14 @@ PointsBiplotCurves <- function(pointprobFull,numcat){
      pointprob[1,5] = pointprobFull[fila,5]
 
      catref = pointprob[1,5]
-     xcatref = pointprob[1,2]
-
+     if(axisOrthogonal){
+        xcatref = pointprob[1,3]  
+     }else{
+        xcatref = pointprob[1,2]     
+     }
+     
      if(catref == (numcat - 1)){
-        srow = SeekRowCompleteProb(pointprobFull,numcat - 1,numcat)
+         srow = SeekRowCompleteProb(pointprobFull,numcat - 1,numcat)
         if(srow > 0){
           rowpointprob = rowpointprob + 1
           pointprob[rowpointprob,1] = pointprobFull[srow,1]
@@ -695,7 +707,7 @@ PointsBiplotCurves <- function(pointprobFull,numcat){
      }else{
         while(catref < numcat){
             if(catref == (numcat - 1)){
-               srow = SeekRowCompleteProb(pointprobFull,numcat - 1,numcat)
+                 srow = SeekRowCompleteProb(pointprobFull,numcat - 1,numcat)
                 if(srow > 0){
                     rowpointprob = rowpointprob + 1
                     pointprob[rowpointprob,1] = pointprobFull[srow,1]
@@ -706,18 +718,22 @@ PointsBiplotCurves <- function(pointprobFull,numcat){
                     catref = numcat
                 }
             }else{
-                xValues = matrix(0,2,1) 
-                for(j in (catref + 1):numcat){
+                 xValues = matrix(0,2,1) 
+                 for(j in (catref + 1):numcat){
                    findRow = SeekRowCompleteProb(pointprobFull,catref,j)
                    if(findRow > 0){
-                      columnAdded = c(pointprobFull[findRow,2],j)
+                      if(axisOrthogonal){
+                        columnAdded = c(pointprobFull[findRow,3],j) 
+                      }else{
+                        columnAdded = c(pointprobFull[findRow,2],j) 
+                      }
                       xValues = cbind(xValues,columnAdded)                      
                    }                   
                 }
                 if(ncol(xValues) == 1){
                     stop(paste("Reference category ",catref," does not intersect with any other upper category",sep=""))
                 }else{
-                    xValues = as.matrix(xValues[,2:ncol(xValues)])
+                    xValues = as.matrix(xValues[,2:ncol(xValues)])                    
                     if(xcatref > xValues[1,1]){
                         col = which.max(xValues[1,])
                         cunion = xValues[2,col]
@@ -725,8 +741,8 @@ PointsBiplotCurves <- function(pointprobFull,numcat){
                         col = which.min(xValues[1,])
                         cunion = xValues[2,col]
                     }
-    
-                    srow = SeekRowCompleteProb(pointprobFull,catref,cunion)
+                        
+                     srow = SeekRowCompleteProb(pointprobFull,catref,cunion)
                     if(srow > 0){
                         rowpointprob = rowpointprob + 1
                         pointprob[rowpointprob,1] = pointprobFull[srow,1]
@@ -735,7 +751,11 @@ PointsBiplotCurves <- function(pointprobFull,numcat){
                         pointprob[rowpointprob,4] = catref
                         pointprob[rowpointprob,5] = cunion
                         catref = cunion
-                        xcatref = pointprob[rowpointprob,2]
+                        if(axisOrthogonal){
+                            xcatref = pointprob[rowpointprob,3]
+                        }else{
+                            xcatref = pointprob[rowpointprob,2]
+                        }
                     }else{
                         stop(paste("An error ocurred in PointsBiplotCurves function.Categories:",catref,"-",union,sep=""))                    
                     }                     
@@ -745,12 +765,87 @@ PointsBiplotCurves <- function(pointprobFull,numcat){
      }
 
     return(pointprob)
+}                                
+
+CalculateFittingIndicatorsMirt <- function(x) {
+  
+	n <- nrow(x$estimRows)
+	p <- ncol(x$estimRows)
+	
+  fitModelsMirt=0
+	for(r in 1:ncol(x$dataFactor)){                 
+	    J = max(x$dataFactor[,r])  
+	    y = x$dataFactor[,r]
+	    Y = matrix(0, n, J)
+    	for (i in 1:n){
+         if (y[i] > 0){
+        		Y[i, y[i]] = 1
+   		   }
+	    }
+    	R = matrix(0, n, J)
+    	for (i in 1:n){                                                                                           
+         R[i, ] = cumsum(Y[i, ])
+      }
+	    A = 1.702*(-1)*x$sepCoefMirt$indCoeffic[r,1:(J-1)]                                     	    
+  	  eta = x$estimRows %*% (1.702*x$sepCoefMirt$xCoeffic[r,])    
+  		ETA = matrix(1, n, 1) %*% A - eta %*% matrix(1, 1, (J - 1))
+  	  PIA = exp(ETA)/(1 + exp(ETA))
+  		PIA = cbind(PIA, matrix(1, n, 1))
+  		PI = matrix(0, n, J)
+  		PI[, 1] = PIA[, 1]
+  		PI[, 2:J] = PIA[, 2:J] - PIA[, 1:(J - 1)]
+  		Rho = log(PIA[, 1:(J - 1)]/(PIA[, 2:J] - PIA[, 1:(J - 1)]))
+  		gRho = log(1 + exp(Rho))
+ 			L = sum(R[, 1:(J - 1)] * Rho - R[, 2:J] * gRho)
+ 			
+ 			Deviance = -2 * sum(L)
+
+    	model <- list()
+    	model$nameVar = dimnames(x$dataFactor)[[2]][r]
+    	model$nobs=n
+    	model$J=J
+    	model$nvar=p
+    	model$fitted.values = PI
+    	model$pred = matrix(max.col(PI), n, 1)
+    	model$clasif = table(y, model$pred)
+    	model$PercentClasif = sum(y == model$pred)/n
+    	model$coefficients = x$sepCoefMirt$xCoeffic[r,]
+    	model$thresholds = x$sepCoefMirt$indCoeffic[r,]
+    	model$logLik = L
+    	model$Deviance = Deviance
+    
+    	# Null Model ---------------------------------
+    	Beta = matrix(0, p, 1)
+    	eta = x$estimRows %*% Beta    
+    	ETA = matrix(1, n, 1) %*% A - eta %*% matrix(1, 1, (J - 1))
+    	PIA = exp(ETA)/(1 + exp(ETA))
+    	PIA = cbind(PIA, matrix(1, n, 1))
+    	PI = matrix(0, n, J)
+    	PI[, 1] = PIA[, 1]
+    	PI[, 2:J] = PIA[, 2:J] - PIA[, 1:(J - 1)]
+    	Rho = log(PIA[, 1:(J - 1)]/(PIA[, 2:J] - PIA[, 1:(J - 1)]))
+    	gRho = log(1 + exp(Rho))
+    
+    	model$DevianceNull = -2 * sum(R[, 1:(J - 1)] * Rho - R[, 2:J] * gRho)
+    	model$Dif=(model$DevianceNull - Deviance)
+    	model$df=p
+    	model$pval=1-pchisq(model$Dif, df =  model$df)
+    	model$CoxSnell=1-exp(-1*model$Dif/n)
+      model$Nagelkerke= model$CoxSnell/(1-exp((model$DevianceNull/(-2)))^(2/n))
+    	model$MacFaden=1-(model$Deviance/model$DevianceNull)
+ 			
+      fitModelsMirt=cbind(fitModelsMirt,model)
+	}
+  fitModelsMirt=fitModelsMirt[,2:(ncol(x$dataFactor)+1)]
+  
+  return(fitModelsMirt)
 }
 
 logit <- function(p) {
 	logit = log(p/(1 - p))
 	return(logit)
 }
+
 ColMax <- function(X) {
 	dimens = dim(X)
 	n = dimens[1]
@@ -778,7 +873,7 @@ EvalOrdlogist <- function(X, par, Ncats) {
 	PT = PI
 	for (j in 2:nitems) {
 		eta = X %*% par$coefficients[j, ]
-    ETA = matrix(1, nnodos, 1) %*% t(par$thresholds[j,1:(Ncats[j]-1)]) - eta %*% matrix(1, 1, (Ncats[j] - 1))					
+    ETA = matrix(1, nnodos, 1) %*% t(par$thresholds[j,1:(Ncats[j]-1)]) - eta %*% matrix(1, 1, (Ncats[j] - 1))			
 		PIA = exp(ETA)/(1 + exp(ETA))
 		PIA = cbind(PIA, matrix(1, nnodos, 1))
 		PI = matrix(0, nnodos, Ncats[j])
@@ -808,7 +903,3 @@ patterns_eq <- function(nnodos, dims) {
 	}
 	return(I)
 }
-
-
-
-

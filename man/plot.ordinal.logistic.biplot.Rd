@@ -7,14 +7,15 @@ Graphical representation of an Ordinal Logistic Biplot.
 Plotting an Ordinal Logistic Biplot. There are parameters related to the way in which the biplot is plotted. All the posible parameters have default values.
 }
 \usage{
-# S3 method for class 'ordinal.logistic.biplot'
 \method{plot}{ordinal.logistic.biplot}(x, planex = 1, planey = 2,
 AtLeastR2 = 0.01, xlimi = -1.5, xlimu = 1.5, ylimi = -1.5,
 ylimu = 1.5, margin = 0, ShowAxis = TRUE, PlotVars = TRUE,
 PlotInd = TRUE, LabelVar = TRUE, LabelInd = TRUE, CexInd = NULL,
 CexVar = NULL, ColorInd = NULL, ColorVar = NULL, PchInd = NULL,
 PchVar = NULL, showIIC = FALSE, iicxi = -1.5, iicxu = 1.5,
-legendPlot = FALSE,\dots)
+legendPlot = FALSE,PlotClus = FALSE,Clusters=NULL,
+chulls = TRUE,centers = TRUE,colorCluster = NULL,
+ConfidentLevel=NULL,addToExistingPlot=FALSE,\dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -89,6 +90,27 @@ Upper limit for the X-axis when plotting item information curves.
 }
   \item{legendPlot}{
 Boolean parameter to show the legend of the plot. Default value is FALSE.
+}
+  \item{PlotClus}{
+Boolean parameter to show the clusters studied. Default value is FALSE.
+}
+  \item{Clusters}{
+Variable with the cluster asociated for each item. Default value is NULL.
+}
+  \item{chulls}{
+Boolean parameter to specify if it will be plotted convex hulls figures. Default value is FALSE.
+}
+  \item{centers}{
+Boolean parameter to plot the centers of each cluster. Default value is NULL.
+}
+  \item{colorCluster}{
+Color for every cluster. It can be an array with the color information for each cluster. Default value is NULL.
+}
+  \item{ConfidentLevel}{
+Value between 0 and 1 to avoid extreme values for the plot. Default value is NULL.
+}
+  \item{addToExistingPlot}{
+Boolean parameter to decide if the plotted items will be added to an existing plot or not. Default value is FALSE.
 }
   \item{\dots}{
 Additional parameters to plot.

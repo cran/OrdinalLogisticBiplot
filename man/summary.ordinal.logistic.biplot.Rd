@@ -10,12 +10,17 @@ This function shows a summary of the principal results for the estimation
   and "Estimate coefficients", "Std. Error", "z value" or "Pr(>|z|)" values.
 }
 \usage{
-## S3 method for class 'ordinal.logistic.biplot'
-\method{summary}{ordinal.logistic.biplot}(object,\dots)
+\method{summary}{ordinal.logistic.biplot}(object,data = FALSE,itemCoords = FALSE,\dots)
 }
 \arguments{
   \item{object}{
 This parameter keeps the ordinal logistic biplot object
+}
+  \item{data}{
+Boolean parameter to show the number of observations. Default value is FALSE.
+}
+  \item{itemCoords}{
+Boolean parameter to show the coordinates of the individuals. Default value is FALSE.
 }
   \item{\dots}{
 Additional parameters to summary.
