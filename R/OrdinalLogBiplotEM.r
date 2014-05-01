@@ -15,9 +15,9 @@
 #  http://www.r-project.org/Licenses/
 #
 OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 100, penalization = 0.2,
-                                show=TRUE,initial=2,alfa=1) {
+                                show=FALSE,initial=1,alfa=1) {
 
-  initials = c("MCA","MIRT","PCoA")
+  initials = c("MCA","MIRT")
   if(is.numeric(initial)){
     initial = initials[initial]                                                                                         
   }
@@ -31,24 +31,23 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 	G = NominalMatrix2Binary(x)
 	s = dim(G)[1]
 	n = dim(G)[2]
-
 	par = list()
 	par$coefficients = array(0, c(p, dim))
 	par$thresholds = array(0, c(p, Maxcat - 1))	
-  par$fit = array(0,c(p,8))                 
+  par$fit = array(0,c(p,8))                
   dimnames(par$fit)[[1]]= dimnames(x)[[2]][1:dim(x)[2]]        
-  dimnames(par$fit)[[2]]= c("logLik","Deviance","df","p-value","PCC","CoxSnell","Macfaden","Nagelkerke")  
+  dimnames(par$fit)[[2]]= c("logLik","Deviance","df","p-value","PCC","CoxSnell","Macfaden","Nagelkerke")   
   
   if(show){print("Calculating initial coordinates")}
   if(initial == "MCA"){
-     	corr = afc(G, neje = dim,alfa=alfa)
+     	corr = afc(G, dim = dim,alpha=alfa)
     	ability = corr$RowCoordinates[, 1:dim]
   }
   if(initial == "MIRT"){
       technical = list()
       technical$NCYCLES = maxiter
-      mod = mirt(x ,dim,technical=technical)
-      ability = fscores(mod,full.scores=T)[,(p+1):(p+dim)] 
+      mod = mirt(x ,dim,technical=technical)      
+      ability = fscores(mod,full.scores=TRUE)[,1:dim] 
   }  
 
 	logLikold = 0
@@ -56,15 +55,15 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 	  if(show){print(paste("Adjusting variable ",j,sep=""))} 
 		model = pordlogist(x[, j], ability, tol = tol, maxiter = maxiter, penalization = penalization,show=show)
 		par$coefficients[j, ] = model$coefficients
-    par$thresholds[j,1:nrow(model$thresholds)] = model$thresholds  
-		par$fit[j,1] = model$logLik            
-		par$fit[j,2] = model$Deviance         		
-		par$fit[j,3] = model$df               
-		par$fit[j,4] = model$pval            			    
-		par$fit[j,5] = model$PercentClasif    
-		par$fit[j,6] = model$CoxSnell        
-		par$fit[j,7] = model$MacFaden        
-		par$fit[j,8] = model$Nagelkerke      
+		    par$thresholds[j,1:nrow(model$thresholds)] = model$thresholds  
+    		par$fit[j,1] = model$logLik            
+    		par$fit[j,2] = model$Deviance            		
+    		par$fit[j,3] = model$df                
+    		par$fit[j,4] = model$pval            	 			    
+    		par$fit[j,5] = model$PercentClasif     
+    		par$fit[j,6] = model$CoxSnell          
+    		par$fit[j,7] = model$MacFaden          
+    		par$fit[j,8] = model$Nagelkerke        
 		logLikold = logLikold + model$logLik      
 	}
 	error = 1
@@ -76,7 +75,9 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 		L = matrix(1, s, q)
 		for (l in 1:s) for (k in 1:q) L[l, k] = prod(PT[k, ]^G[l, ])
 		Pl = L %*% A
-		if(show){print("Calculating f-scores")}
+		if(show){
+        print("Calculating f-scores")
+    }
 		ability = matrix(0, s, dim)
 		for (l in 1:s) for (j in 1:dim) {
 			for (k in 1:q) ability[l, j] = ability[l, j] + X[k, j] * L[l, k] * A[k]
@@ -85,24 +86,30 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 		# M-step  -  Parameter estimation
 		logLik = 0
 		for (j in 1:p) {
-  	  if(show){print(paste("Adjusting variable ",j,sep=""))} 		
+  	  if(show){
+        print(paste("Adjusting variable ",j,sep=""))
+      } 		
 			model = pordlogist(x[, j], ability, tol = tol, maxiter = maxiter, penalization = penalization,show=show)
 			par$coefficients[j, ] = model$coefficients
-      par$thresholds[j,1:nrow(model$thresholds)] = model$thresholds  
-  		par$fit[j,1] = model$logLik            
-  		par$fit[j,2] = model$Deviance           		
-  		par$fit[j,3] = model$df               
-  		par$fit[j,4] = model$pval            				    
-  		par$fit[j,5] = model$PercentClasif    
-  		par$fit[j,6] = model$CoxSnell         
-  		par$fit[j,7] = model$MacFaden        
-  		par$fit[j,8] = model$Nagelkerke     
+		        par$thresholds[j,1:nrow(model$thresholds)] = model$thresholds  
+        		par$fit[j,1] = model$logLik            
+        		par$fit[j,2] = model$Deviance           		
+        		par$fit[j,3] = model$df               
+        		par$fit[j,4] = model$pval            	 			    
+        		par$fit[j,5] = model$PercentClasif    
+        		par$fit[j,6] = model$CoxSnell          
+        		par$fit[j,7] = model$MacFaden          
+        		par$fit[j,8] = model$Nagelkerke       
 			logLik = logLik + model$logLik
 		}           
 		error = abs((logLik - logLikold)/logLik)
 		logLikold = logLik
-		if(show) print(paste("Iteration ",iter,"- Log-Lik:",logLik," - Change:",error,sep=""))		
+		if(show){
+       print(paste("Iteration ",iter,"- Log-Lik:",logLik," - Change:",error,sep=""))		
+    }
 	}
+	print(paste("Iterations: ",iter,"- Log-Lik:",logLik," - Change:",error,sep=""))
+	
 	d = sqrt(rowSums(par$coefficients^2) + 1)
 	loadings = solve(diag(d)) %*% par$coefficients
 	thresholds = solve(diag(d)) %*% par$thresholds
@@ -117,4 +124,3 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 	class(model) = "ordinal.logistic.biplotEM"
 	return(model)
 }
-

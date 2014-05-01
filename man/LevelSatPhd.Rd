@@ -2,16 +2,16 @@
 \alias{LevelSatPhd}
 \docType{data}
 \title{
-Questionnaire Data
+Data set extracted from the Careers of doctorate holders survey carried out by Spanish Statistical Office in 2008.
 }
 \description{
-The sample data, as part of a large survey, corresponds to 10 people who have the PhD degree and shows the level of satisfaction about some issues.
+The sample data, as part of a large survey, corresponds to 100 people who have the PhD degree
+and shows the level of satisfaction about some issues.
 }
 \usage{data(LevelSatPhd)}
 \format{
-  This data frame contains 10 observation for the following 5 ordinal variables,
-  with four categories each:
-  (1= "Very Satisfied", 2= "Somewhat Satisfied",3="Somewhat dissatisfied",
+  This data frame contains 100 observation for the following 5 ordinal variables,
+  with four categories each:   (1= "Very Satisfied", 2= "Somewhat Satisfied",3="Somewhat dissatisfied",
   4="Very dissatisfied")
   \describe{
     \item{Salary}{}

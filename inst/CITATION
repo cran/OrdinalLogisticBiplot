@@ -2,19 +2,19 @@ citHeader("To cite OrdinalLogisticBiplot in publications use:")
 
 
 citEntry(entry  = "Manual",
- title  = "Ordinal Logistic Biplots in R",
- author = "Julio Cesar Hernandez and
- Jose Luis Vicente-Villardon",
+ title  = "OrdinalLogisticBiplot: Biplot representations of ordinal variables",
+ author = "Julio C\'esar Hern\'andez and
+ Jos\'e Luis Vicente-Villard\'on",
  
 organization = "Universidad de Salamanca",address = "Salamanca, Spain", year= version$year,
 
  
 textVersion = 
-paste("E.Frutos Bernal & P.Galindo Villardon (", version$year, ").",
-"Ordinal Logistic Biplots in R","Salamanca, Spain.",sep=""))
+paste("Julio C\'esar Hern\'andez & Jos\'e Luis Vicente-Villard\'on (", version$year, ").",
+"OrdinalLogisticBiplot: Biplot representations of ordinal variables","Salamanca, Spain.",sep=""))
 
 
-citFooter("Lots of time and effort were invested in creating Ordinal Logistic Biplot package.",
+citFooter("Lots of time and effort were invested in creating OrdinalLogisticBiplot.",
           "Please, cite it when using it together with R.",
           "See also", sQuote("citation()"),
           "for citing R.")

@@ -4,7 +4,8 @@
 Graphical representation of an Ordinal Logistic Biplot.
 }
 \description{
-Plotting an Ordinal Logistic Biplot. There are parameters related to the way in which the biplot is plotted. All the posible parameters have default values.
+Plotting an Ordinal Logistic Biplot. There are parameters related to the way in which
+the biplot is plotted. All the posible parameters have default values.
 }
 \usage{
 \method{plot}{ordinal.logistic.biplot}(x, planex = 1, planey = 2,
@@ -80,7 +81,8 @@ Symbol for the individuals. It can be an array with the pch information for each
 Symbol for the variables. It could be an array with the pch information for each variable.
 }
   \item{showIIC}{
-Boolean parameter to decide if the user wants to see the item information curves for each variable. Default value is FALSE.
+Boolean parameter to decide if the user wants to see the item information curves
+for each variable. Default value is FALSE.
 }
   \item{iicxi}{
 Lower limit for the X-axis when plotting item information curves.
@@ -117,7 +119,10 @@ Additional parameters to plot.
 }
 }
 \details{
-The function without parameters plots the ordinal.logistic.biplot object with labels in the original data and default values for colors, symbols and sizes for points and lines. Other values of colors, symbols and sizes can be supplied. A single value applies to all the points but an array with different values can be used to improve the undestanding of the plot.-
+The function without parameters plots the ordinal.logistic.biplot object with labels in the
+original data and default values for colors, symbols and sizes for points and lines. Other
+values of colors, symbols and sizes can be supplied. A single value applies to all the points
+but an array with different values can be used to improve the undestanding of the plot.-
 }
 \author{
 Julio Cesar Hernandez Sanchez, Jose Luis Vicente-Villardon

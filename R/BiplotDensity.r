@@ -28,8 +28,7 @@ BiplotDensity <- function(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels
                           "3" = {colores = terrain.colors(ncolors)},
                           "4" = {colores = topo.colors(ncolors)},
                           "5" = {colores = cm.colors(ncolors)})
-        #print(colores)
-        
+       
         if(img){
             if(separate){
                 ncols = round(sqrt(nlevels))

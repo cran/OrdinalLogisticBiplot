@@ -1,10 +1,12 @@
 \name{plotOrdinalVariable}
 \alias{plotOrdinalVariable}
 \title{
-Plot an ordinal variable to an existing biplot.
+Function for plotting in the reduced space an ordered categorical variable.
 }
 \description{
-This function plots an ordinal variable to an existing biplot or to a new one, using only the variable and the coordinates of the items.
+Graphical representation of a polytomous ordered variable in the reduced space,
+according to Vicente-Villardon & Hernandez-Sanchez(2014) methodology.
+It can be choosen some parameters related to the way in which the variable is plotted.
 }
 \usage{
 plotOrdinalVariable(ordinalfVar,nameVariable,estimRows,planex = 1,planey = 2,
@@ -21,7 +23,7 @@ The ordinal variable. It must be an ordered factor.
 Name of the variable that the user wants to represent.
 }
   \item{estimRows}{
-Matrix with the estimated coordinates for the items in the reduced dimension.
+Matrix with the estimated coordinates for the individuals in the reduced dimension.
 }
   \item{planex}{
 Dimension for X axis.
@@ -75,6 +77,11 @@ Maximum number of iterations.
 Penalization used to avoid singularities.
 }
 }
+\references{
+Vicente-Villardon, J. L. & Hernandez, J. C. & (2014) Logistic Biplots for ordinal
+data with an application to job satisfaction of doctorate degree holders in Spain.
+Preprint available at arXiv.
+}
 \author{
 Julio Cesar Hernandez Sanchez, Jose Luis Vicente-Villardon
 
@@ -83,15 +90,14 @@ Maintainer: Julio Cesar Hernandez Sanchez <juliocesar_avila@usal.es>
 \examples{
 data(LevelSatPhd)
 olbo = OrdinalLogisticBiplot(LevelSatPhd,sFormula=NULL,
-      numFactors=2,coordinates="EM")
+  numFactors=2,method="EM")
 ordinalfVar = factor(LevelSatPhd[,1],ordered=TRUE)
 levels(ordinalfVar) = c("VS","SS","SD","VD")
-estimRows = olbo$ItemsCoords
+estimRows = olbo$RowCoords
 nameVariable = "Salary"   
 plotOrdinalVariable(ordinalfVar,nameVariable,estimRows,planex = 1,
   planey = 2,xi=-1.5,xu=1.5,yi=-1.5,yu=1.5,
-  margin=0.2,CexVar=0.7,showIIC = TRUE)
-      
+  margin=0.2,CexVar=0.7,showIIC = TRUE)     
 }
 
 \keyword{plot}

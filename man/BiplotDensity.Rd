@@ -1,10 +1,12 @@
 \name{BiplotDensity}
 \alias{BiplotDensity}
 \title{
-Density plot of a variable with contours overlaid.
+Density plot of a data set with overlaid contours. 
 }
 \description{
-This function draws for a set of points a density contour lines biplot. This tool uses the kde2d function of library MASS.
+This function draws for a set of points a density contour lines plot.
+The densities can be calculated for the whole
+set of points or for the groups defines by a nominal variable.
 }
 \usage{
 BiplotDensity(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels,
@@ -15,34 +17,34 @@ BiplotDensity(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels,
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{X}{
-A matrix with the items coordinates for the plane in which the the contour lines will be plotted.
+A matrix with the  coordinates for the plane in which the the contour lines will be plotted.
 }
   \item{y}{
-Categorical variable that the user wants to study.
+Categorical variable defining clusters. If NULL, the density is calculated for the whole set of points.
 }
   \item{nlevels}{
-Maximum value of the variable specified in the second parameter.
+Number of clusters.
 }
   \item{grouplabels}{
-Set of labels for the centers of each category. It should be a vector.
+Set of labels for the centers of each cluster. It should be a vector with "nlevels" components.
 }
   \item{ncontours}{
 Number of contours that will be used in the representation.
 }
   \item{groupcols}{
-Set of colors for each contour lines group. It should be a vector.
+Vector whith a set of colors for the clusters.
 }
   \item{img}{
-Boolean parameter to specify if an image will be plotted behind the contour lines indicating with diferent colorations the density of the points.Default value is TRUE. 
+Should the densty be plotted (with different colors) together with the contour lines?. Default value is TRUE. 
 }
   \item{separate}{
-Boolean parameter to specify for each category of the variable a separate biplot representation.Default value is FALSE. 
+Should the density for each cluster be represented on a different picture?. Default value is FALSE. 
 }
   \item{ncolors}{
-Number of colors that will be used in the image.
+Number of colors for the densities.
 }
   \item{ColorType}{
-Type of coloration for the image in the biplot. It should be a number between 1 and 5.
+Type of color schema for the density image. It should be a number between 1 and 5.
 }
  \item{xliml}{
 Minimum value on the x-axis.
@@ -67,11 +69,11 @@ Maintainer: Julio Cesar Hernandez Sanchez <juliocesar_avila@usal.es>
 }
 \examples{
 data(LevelSatPhd)
-olbo = OrdinalLogisticBiplot(LevelSatPhd[,1:4])
-x = olbo$ItemsCoords[, 1]
-y = olbo$ItemsCoords[, 2]
+olbo = OrdinalLogisticBiplot(LevelSatPhd)
+x = olbo$RowCoords[, 1]
+y = olbo$RowCoords[, 2]
 plot(x,y, cex = 0, xlim=c(-1,1),ylim=c(-1,1))
-X = olbo$ItemsCoords
+X = olbo$RowCoords
 y = as.matrix(as.numeric(LevelSatPhd[,4]))
 gcols = c("midnightblue","black","red","gray87")
 BiplotDensity(X,y,groupcols = gcols)

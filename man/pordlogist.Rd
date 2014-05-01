@@ -4,7 +4,7 @@
 Ordinal logistic regression with ridge penalization
 }
 \description{
-This function does a logistic regression between a dependent ordinal variable y
+This function performs a logistic regression between a dependent ordinal variable y
   and some independent variables x, and solves the separation problem using ridge penalization.
 }
 \usage{
@@ -78,7 +78,7 @@ An object of class \code{"pordlogist"}.  This has components:
   
 }
 \author{
-Julio Cesar Hernandez Sanchez, Jose Luis Vicente-Villardon
+Jose Luis Vicente-Villardon, Julio Cesar Hernandez Sanchez
 
 Maintainer: Julio Cesar Hernandez Sanchez <juliocesar_avila@usal.es>
 }

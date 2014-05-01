@@ -1,4 +1,4 @@
-# file OrdinalLogisticBiplot/R/plot.ordBipCoeffVariable.R
+# file OrdinalLogisticBiplot/R/plotOrdinalFittedVariable.R
 # copyright (C) 2012-2013 J.C. Hernandez and J.L. Vicente-Villardon
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -16,10 +16,15 @@
 #
 
 
-plotOrdBipCoeffVariable <- function(nameVariable,coeffic,D = 1,planex = 1,planey = 2,xi=-3.5,xu=3.5,yi=-3.5,yu=3.5,
-        margin=0,numFactors = 2,CexVar=0.7,ColorVar="blue",PchVar=0.7,addToPlot=FALSE,showIIC = TRUE,iicxi=-2.5,iicxu=2.5){
+plotOrdinalFittedVariable <- function(nameVariable,coeffic,D,numFactors,planex = 1,planey = 2,xi=-3.5,xu=3.5,yi=-3.5,yu=3.5,
+        margin=0,CexVar=0.7,ColorVar="blue",PchVar=0.7,addToPlot=FALSE,showIIC = TRUE,iicxi=-2.5,iicxu=2.5){
 
    numcat = length(coeffic) - numFactors + 1
+   
+   if(D == 1.702){
+     coeffic = c(coeffic[1:numFactors],(-1)*coeffic[(numFactors+1):length(coeffic)])
+   }      
+   
    ordBipVar = CalculateOrdinalBiplotGeneral(nameVariable,numcat,coeffic,planex,planey,numFactors,D)
 
    if(addToPlot == FALSE){
@@ -36,4 +41,3 @@ plotOrdBipCoeffVariable <- function(nameVariable,coeffic,D = 1,planex = 1,planey
    }
 
 }
-

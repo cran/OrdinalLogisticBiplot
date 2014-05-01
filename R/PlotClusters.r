@@ -1,4 +1,4 @@
-# file OrdinalLogisticBiplot/R/PlotClusterVariable.R
+# file OrdinalLogisticBiplot/R/PlotClusters.R
 # copyright (C) 2012-2013 J.C. Hernandez and J.L. Vicente-Villardon
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 #  http://www.r-project.org/Licenses/
 #
 
-PlotClusterVariable<- function(A, Groups = ones(c(nrow(A), 1)),
+PlotClusters<- function(A, Groups = ones(c(nrow(A), 1)),
                          colors = NULL, chulls = TRUE,centers = TRUE,
                          ConfidentLevel=0.95) {
 
@@ -23,6 +23,7 @@ PlotClusterVariable<- function(A, Groups = ones(c(nrow(A), 1)),
       stop("The group variable must be a factor")
     }
     
+    levellab = levels(Groups)
     g = length(levels(Groups))
     if (is.null(colors)) {
         if (g > 1) {
@@ -36,11 +37,13 @@ PlotClusterVariable<- function(A, Groups = ones(c(nrow(A), 1)),
          colors = rep(colors[1], g)
        }else if(length(colors) < g){
                colors = rep(colors[1], g)
-             }else{
-               colors = colors[1:g]
-             }    
+             }else if(length(colors) == nrow(A)){
+                     colors = c(1:g)
+                   }else{
+                     colors = colors[1:g]
+                   }    
     }
-    levellab = levels(Groups)
+    
     Sizes = zeros(c(g, 1))
     Means = zeros(c(g, 2))
     X = list()

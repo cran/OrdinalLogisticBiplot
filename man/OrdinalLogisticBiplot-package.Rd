@@ -5,7 +5,8 @@
 Ordinal Logistic Biplot representations for polytomous ordered data.
 }
 \description{
-Analysis of a matrix of polytomous ordered items using Ordinal Logistic Biplots (OLB). The OLB procedure extends the binary logistic biplot to ordinal (polytomous) data. 
+Analysis of a matrix of polytomous ordered items using Ordinal Logistic Biplots (OLB).
+The OLB procedure extends the binary logistic biplot to ordinal (polytomous) data. 
 }
 \details{
 \tabular{ll}{
@@ -27,7 +28,7 @@ Maintainer: Julio Cesar Hernandez Sanchez <juliocesar_avila@usal.es>
 \examples{
 data(LevelSatPhd)
 olbo = OrdinalLogisticBiplot(LevelSatPhd,sFormula=NULL,numFactors=2,
-coordinates="EM",penalization=0.2,show=FALSE)
+method="EM",penalization=0.2,show=FALSE)
 summary(olbo)
 plot(olbo,PlotInd=TRUE,xlimi=-1,xlimu=1,ylimi=-1,ylimu=1,margin = 0.2,
 ColorVar = c("red","green","black","blue","yellow"),CexVar = c(0.7),showIIC=FALSE)

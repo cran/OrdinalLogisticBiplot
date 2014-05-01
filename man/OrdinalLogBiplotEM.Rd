@@ -8,7 +8,7 @@ This function computes, with an alternated algorithm, the row and column paramet
 }
 \usage{
 OrdinalLogBiplotEM(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 100,
-                  penalization = 0.2,show=TRUE,initial=2,alfa=1)
+                  penalization = 0.2,show=FALSE,initial=1,alfa=1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -34,10 +34,11 @@ Penalization used in the diagonal matrix to avoid singularities.
 Boolean parameter to specify if the user wants to see every iteration.
 }
 \item{initial}{
-Method used to choose the initial ability in the algorithm.
+Method used to choose the initial ability in the algorithm. Default value is 1.
 }
 \item{alfa}{
-Optional parameter to calculate row and column coordinates in Simple correspondence analysis if the initial parameter is equal to 1.
+Optional parameter to calculate row and column coordinates in Simple
+correspondence analysis if the initial parameter is equal to 1.
 }
 }
 
@@ -45,7 +46,9 @@ Optional parameter to calculate row and column coordinates in Simple corresponde
 An object of class \code{"ordinal.logistic.biplot.EM"}.This has components:
 
   \item{RowCoordinates}{Coordinates for the rows or the individuals}
-  \item{ColumnParameters}{List with information about the Ordinal Logistic Models calculated for each variable including: estimated parameters with thresholds,percents of correct classifications,and pseudo-Rsquared}
+  \item{ColumnParameters}{List with information about the Ordinal Logistic Models
+    calculated for each variable including: estimated parameters with thresholds,
+    percents of correct classifications,and pseudo-Rsquared}
   \item{loadings}{factor loadings}
   \item{LogLikelihood}{Logarithm of the likelihood}
   \item{r2}{R squared coefficient}
@@ -53,11 +56,11 @@ An object of class \code{"ordinal.logistic.biplot.EM"}.This has components:
 
 }
 \references{
-  Bock,R. & Aitkin,M. (1981),\emph{Marginal maximum likelihood estimation of item parameters: Aplication of an EM algorithm}, Phychometrika 46(4), 443-459.
-
+  Bock,R. & Aitkin,M. (1981),\emph{Marginal maximum likelihood estimation of item parameters:
+  Aplication of an EM algorithm}, Phychometrika 46(4), 443-459.
 }
 \author{
-Julio Cesar Hernandez Sanchez, Jose Luis Vicente-Villardon
+Jose Luis Vicente-Villardon, Julio Cesar Hernandez Sanchez
 
 Maintainer: Julio Cesar Hernandez Sanchez <juliocesar_avila@usal.es>
 }

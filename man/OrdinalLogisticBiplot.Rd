@@ -6,21 +6,22 @@ Function that calculates the parameters of the Ordinal Logistic Biplot.
 }
 \usage{
 OrdinalLogisticBiplot(datanom,sFormula=NULL,numFactors=2,
-coordinates="EM",rotation="varimax",metfsco="EAP",
+method="EM",rotation="varimax",metfsco="EAP",
 nnodos = 10, tol = 1e-04, maxiter = 100,
-penalization = 0.1,cte=TRUE, show=TRUE,ItemCurves = FALSE,initial=2,alfa=1)
+penalization = 0.1,cte=TRUE, show=FALSE,ItemCurves = FALSE,initial=1,alfa=1)
 }
 \arguments{
   \item{datanom}{
 The data set, it can be a \emph{matrix} with integers or a \emph{data frame} with factors. All variables have to be ordinal. 
 }
   \item{sFormula}{
-This parameter follows the unifying interface for selecting variables from a data frame for a plot, test or model. The most common formula es of type y ~ x1+x2+x3. It has a default value of NULL if not specified.
+This parameter follows the unifying interface for selecting variables from a data frame for a plot,
+test or model. The most common formula es of type y ~ x1+x2+x3. It has a default value of NULL if not specified.
 }
   \item{numFactors}{
 Number of dimensions of the solution. It should be lower than the number of variables. It has a default value of 2.
 }
-  \item{coordinates}{
+  \item{method}{
 This parameter can be: "EM" or "MIRT". Method to compute the row coordinates.
 }
   \item{rotation}{
@@ -45,13 +46,13 @@ Penalization for the ridge regression for each variable.
 Include constant in the logistic regression model. Default is TRUE.
 }
   \item{show}{
-Show intermediate computations. Default is TRUE.
+Show intermediate computations. Default is FALSE.
 }
 \item{ItemCurves}{
 Show item information curves. Default is FALSE.
 }
 \item{initial}{
-Method used to choose the initial ability in the EM algorithm. Default value is 2.
+Method used to choose the initial ability in the EM algorithm. Default value is 1.
 }
 \item{alfa}{
 Optional parameter to calculate row and column coordinates in Simple correspondence analysis if the initial parameter is equal to 1. Default value is 1.
@@ -71,7 +72,8 @@ Equations defining the set of probability response surfaces for the cumulative p
 \value{
 An object of class \code{"ordinal.logistic.biplot"}.  This has some components:
 
-  \item{dataSet }{Data set of study with all the information about the name of the levels and names of the variables and individuals}
+  \item{dataSet }{Data set of study with all the information about the name of
+                  the levels and names of the variables and individuals}
   \item{ItemsCoords }{Coordinates for the rows in the reduced space}
   \item{NCats }{Number of categories of each variable from the data set}  
   \item{estimObject }{Object with all the estimated information using EM alternated algorithm or MIRT procedure}

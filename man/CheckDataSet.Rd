@@ -1,10 +1,10 @@
 \name{CheckDataSet}
 \alias{CheckDataSet}
 \title{
-Check the data set.
+Check a data set.
 }
 \description{
-This function checks if the data is a data frame or a matrix and saves the data as a matrix of integers, and stores the names of rows, colums and levels for each variable as vectors to use them later.
+This function checks if a data set is a data frame or a matrix and saves the data as a matrix of integers, and stores the names of rows, colums and levels for each variable as vectors to use them later.
 }
 \usage{
 CheckDataSet(datanom)
@@ -15,7 +15,8 @@ It can be a data frame or a matrix.
 }
 }
 \details{
-The function checks if some variable has NA values and deletes the corresponding row.Also checks for missing categories and recodifies the variable keeping the original labels for levels.
+The function checks if some variable has NA values and deletes the corresponding row.
+Also checks for missing categories and recodifies the variable keeping the original labels for levels.
 }
 \value{
 An object of class \code{"data.ordinal"}.  This has components:

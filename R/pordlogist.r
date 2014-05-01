@@ -1,5 +1,5 @@
 # file OrdinalLogisticBiplot/R/pordlogist.R
-# copyright (C) 2012-2013 J.C. Hernandez and J.L. Vicente-Villardon
+# copyright (C) 2012-2013 J.L. Vicente-Villardon and J.C. Hernandez
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -16,8 +16,11 @@
 #
 
 pordlogist <- function(y, x, penalization = 0.1, tol = 1e-04, maxiter = 200, show = FALSE) {
+	if(!is.matrix(x)){
+    x = as.matrix(x)    
+  }
 	n <- nrow(x)
-	p <- ncol(x)
+  p <- ncol(x)
 	J = max(y)
 	npar = J + p - 1
 	Y = matrix(0, n, J)

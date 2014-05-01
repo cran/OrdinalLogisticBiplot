@@ -22,7 +22,8 @@ Additional parameters to summary.
 }
 }
 \details{
-This function is a method for the generic function summary() for class "pordlogist". It can be invoked by calling summary(x) for an object x of the appropriate class.
+This function is a method for the generic function summary() for class "pordlogist".
+It can be invoked by calling summary(x) for an object x of the appropriate class.
 }
 \author{
 Julio Cesar Hernandez Sanchez, Jose Luis Vicente-Villardon
