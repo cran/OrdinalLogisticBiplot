@@ -48,6 +48,7 @@ PlotClusters<- function(A, Groups = ones(c(nrow(A), 1)),
     Means = zeros(c(g, 2))
     X = list()
     for (i in 1:g) {
+      print(i)
       X[[i]] = A[which(Groups == levellab[i]), ]
       if(!is.null(dim(X[[i]]))){
           Sizes[i] = dim(X[[i]])[1]
@@ -60,7 +61,7 @@ PlotClusters<- function(A, Groups = ones(c(nrow(A), 1)),
     
     if(!is.null(ConfidentLevel)){
       if((ConfidentLevel > 0) & (ConfidentLevel < 1)){
-          distances = matrix(0,nrow(A),1)
+         distances = matrix(0,nrow(A),1)
           for(i in 1:nrow(A)){
             distances[i] = sqrt((A[i,1]-Means[Groups[i],1])^2 + (A[i,2]-Means[Groups[i],2])^2)
           }

@@ -6,7 +6,7 @@ Density plot of a data set with overlaid contours.
 \description{
 This function draws for a set of points a density contour lines plot.
 The densities can be calculated for the whole
-set of points or for the groups defines by a nominal variable.
+set of points or for the groups defined by a nominal variable.
 }
 \usage{
 BiplotDensity(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels,
@@ -14,13 +14,12 @@ BiplotDensity(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels,
   ncolors = 20, ColorType = 4, xliml = -1, xlimu = 1, yliml = -1,
   ylimu = 1, plotInd = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{X}{
 A matrix with the  coordinates for the plane in which the the contour lines will be plotted.
 }
   \item{y}{
-Categorical variable defining clusters. If NULL, the density is calculated for the whole set of points.
+Categorical variable used for defining clusters. If NULL, the density is calculated for the whole set of points.
 }
   \item{nlevels}{
 Number of clusters.
@@ -35,7 +34,7 @@ Number of contours that will be used in the representation.
 Vector whith a set of colors for the clusters.
 }
   \item{img}{
-Should the densty be plotted (with different colors) together with the contour lines?. Default value is TRUE. 
+Should the density be plotted (with different colors) together with the contour lines?. Default value is TRUE. 
 }
   \item{separate}{
 Should the density for each cluster be represented on a different picture?. Default value is FALSE. 

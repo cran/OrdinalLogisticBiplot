@@ -12,8 +12,8 @@ The OLB procedure extends the binary logistic biplot to ordinal (polytomous) dat
 \tabular{ll}{
 Package: \tab OrdinalLogisticBiplot\cr
 Type: \tab Package\cr
-Version: \tab 0.1\cr
-Date: \tab 2013-10-29\cr
+Version: \tab 0.4\cr
+Date: \tab 2015-01-16\cr
 License: \tab GPL (>=2)\cr
 }
 }

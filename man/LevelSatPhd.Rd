@@ -6,7 +6,7 @@ Data set extracted from the Careers of doctorate holders survey carried out by S
 }
 \description{
 The sample data, as part of a large survey, corresponds to 100 people who have the PhD degree
-and shows the level of satisfaction about some issues.
+and it shows the level of satisfaction of the doctorate holders about some issues.
 }
 \usage{data(LevelSatPhd)}
 \format{

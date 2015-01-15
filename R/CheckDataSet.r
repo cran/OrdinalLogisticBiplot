@@ -20,7 +20,7 @@
   #datanom: it could be a data.frame or a matrix with the nominal data
 CheckDataSet <- function(datanom){
 
-    typeDataFrame = FALSE     
+    typeDataFrame = FALSE     #Data are matrix
     nRowInit = nrow(datanom)
     datanom <- na.omit(datanom)
 
@@ -46,6 +46,7 @@ CheckDataSet <- function(datanom){
               datanom[,i] = as.numeric(datanom[,i])
           }else if(is.numeric(datanom[,i])){
                     if(!is.integer(datanom[,i])){
+                       print(paste("Variable ",i," will be transformed to integer because it is not",sep=""))
                        datanom[,i] = as.integer(datanom[,i])
                     }
                     LevelNames[[contLevel]] = c(1:max(datanom[,i]))
@@ -75,6 +76,7 @@ CheckDataSet <- function(datanom){
                  contLevel = contLevel + 1
                  datanom[,i] = as.numeric(datanom[,i])
                  if(!is.integer(datanom[,i])){
+                   print(paste("Variable ",i," will be transformed to integer because it is not",sep=""))
                    datanom[,i] = as.integer(datanom[,i])
                  }
               }
@@ -82,8 +84,7 @@ CheckDataSet <- function(datanom){
           }else{
             stop("Data set should be a data frame or a matrix")
           }
-    #In case that RowNames or ColNames are NULL we fix the name of the variables and rows
-   	if (is.null(RowNames)){
+    	if (is.null(RowNames)){
   		RowNames <- rownames(datanom, do.NULL = FALSE, prefix = "I")
   		dimnames(datanom)[[1]] = RowNames
     }
@@ -105,7 +106,7 @@ CheckDataSet <- function(datanom){
           newColdataSet = dataSet[,i]
           for(j in 1:datanomcats[i]){
               newColdataSet = replace(newColdataSet,newColdataSet==columValuesOrd[j],j)
-              if(typeDataFrame){
+               if(typeDataFrame){
                 if(length(LevelNames[[i]]) > 0){
                     ActLevelNames <- c(ActLevelNames,LevelNames[[i]][columValuesOrd[j]])
                 }
@@ -116,8 +117,8 @@ CheckDataSet <- function(datanom){
           dataSet[,i] = newColdataSet
           LevelNames[[i]] = ActLevelNames
         }else{
-         if((datanomcats[i] == 2)&(max(dataSet[,i]) < datanomcats[i])){
-           dataSet[,i] = dataSet[,i] + 1
+          if((datanomcats[i] == 2)&(max(dataSet[,i]) < datanomcats[i])){
+            dataSet[,i] = dataSet[,i] + 1
             ActLevelNames = NULL
             columValuesOrd = sort(unique(dataSet[,i]))
             for(j in 1:datanomcats[i]){
@@ -147,5 +148,4 @@ CheckDataSet <- function(datanom){
     return(data.ordinal)
 
 }
-
 

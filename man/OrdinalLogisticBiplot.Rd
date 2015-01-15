@@ -12,11 +12,11 @@ penalization = 0.1,cte=TRUE, show=FALSE,ItemCurves = FALSE,initial=1,alfa=1)
 }
 \arguments{
   \item{datanom}{
-The data set, it can be a \emph{matrix} with integers or a \emph{data frame} with factors. All variables have to be ordinal. 
+The data set; it can be a \emph{matrix} with integers or a \emph{data frame} with factors. All variables have to be ordinal. 
 }
   \item{sFormula}{
 This parameter follows the unifying interface for selecting variables from a data frame for a plot,
-test or model. The most common formula es of type y ~ x1+x2+x3. It has a default value of NULL if not specified.
+test or model. The most common formula is of type y ~ x1+x2+x3. It has a default value of NULL if it is not specified.
 }
   \item{numFactors}{
 Number of dimensions of the solution. It should be lower than the number of variables. It has a default value of 2.
@@ -65,16 +65,16 @@ There are several options for the computation:
 
 1.- Using the package \pkg{mirt} to obtain the row scores, i. e. using a solution obtained from a latent trait model. The column (item) parameters should be directly used by our biplot procedure but, because of the characteristics of the package that performs a default rotation after parameter estimation, we have to reestimate the item parametes to be coherent to the scores.
 
-2.- Using our implementation of the EM algorithm alternating expected a porteriori scores and Ridge Nominal Logistic Regression for each variable.We use here a Cumulative link model ,that is, a logistic regression model for cumulative logits.
+2.- Using our implementation of the EM algorithm alternating expected a porteriori scores and Ridge Ordinal Logistic Regression for each variable. We use here a Cumulative link model ,that is, a logistic regression model for cumulative logits.
 
-Equations defining the set of probability response surfaces for the cumulative probabilities are sigmoidal as in the binary case (Vicente-Villardon et al.2006) and then share its geometry. All categories have a different constant but the same slopes, that means that the prediction direction is common to all categories and just the prediction markers are different. The representation subspace can be divided into prediction regions, for each category, delimited by parallel straight lines.
+Equations defining the set of probability response surfaces for the cumulative probabilities are sigmoidal as in the binary case (Vicente-Villardon et al.2006) and then they share its geometry. All categories have a different constant but the same slopes, that means that the prediction direction is common to all categories and just the prediction markers are different. The representation subspace can be divided into prediction regions, for each category, delimited by parallel straight lines.
 }
 \value{
 An object of class \code{"ordinal.logistic.biplot"}.  This has some components:
 
   \item{dataSet }{Data set of study with all the information about the name of
                   the levels and names of the variables and individuals}
-  \item{ItemsCoords }{Coordinates for the rows in the reduced space}
+  \item{RowCoords }{Coordinates for the rows in the reduced space}
   \item{NCats }{Number of categories of each variable from the data set}  
   \item{estimObject }{Object with all the estimated information using EM alternated algorithm or MIRT procedure}
   \item{Fitting  }{matrix with the percentage of correct clasifications and pseudo R squared valued for each variable}

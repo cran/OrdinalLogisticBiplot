@@ -1,7 +1,7 @@
 \name{plotOrdinalVariable}
 \alias{plotOrdinalVariable}
 \title{
-Function for plotting in the reduced space an ordered categorical variable.
+This function plots in the reduced space an ordered categorical variable.
 }
 \description{
 Graphical representation of a polytomous ordered variable in the reduced space,

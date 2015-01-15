@@ -1,7 +1,7 @@
 \name{plotOrdinalFittedVariable}
 \alias{plotOrdinalFittedVariable}
 \title{
-Function for plotting in the reduced space an ordered and fitted categorical variable.
+Function that gives the posibility for the user for plotting in the reduced space an ordered and fitted categorical variable.
 }
 \description{
 Graphical representation of a polytomous ordered variable previously fitted in the reduced space,

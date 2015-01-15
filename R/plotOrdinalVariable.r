@@ -44,4 +44,3 @@ plotOrdinalVariable <- function(ordinalfVar,nameVariable,estimRows,planex = 1,pl
    }
 
 }
-

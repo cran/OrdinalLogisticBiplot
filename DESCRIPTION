@@ -1,8 +1,8 @@
 Package: OrdinalLogisticBiplot
 Type: Package
 Title: Biplot representations of ordinal variables
-Version: 0.3
-Date: 2014-05-01
+Version: 0.4
+Date: 2015-15-01
 Author: Julio Cesar Hernandez Sanchez, Jose Luis Vicente-Villardon
 Maintainer: Julio Cesar Hernandez Sanchez <juliocesar_avila@usal.es>
 Description: Analysis of a matrix of polytomous items using Ordinal Logistic Biplots (OLB)
@@ -20,5 +20,5 @@ Depends: R (>= 2.15.1),mirt,MASS,NominalLogisticBiplot
 LazyData: yes
 Archs: i386, x64
 NeedsCompilation: no
-Packaged: 2014-05-02 20:41:21 UTC; Julio César
-Date/Publication: 2014-05-03 00:36:13
+Packaged: 2015-01-16 18:48:23 UTC; Julio César
+Date/Publication: 2015-01-16 22:11:44

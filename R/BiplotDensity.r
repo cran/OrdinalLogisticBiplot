@@ -28,7 +28,8 @@ BiplotDensity <- function(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels
                           "3" = {colores = terrain.colors(ncolors)},
                           "4" = {colores = topo.colors(ncolors)},
                           "5" = {colores = cm.colors(ncolors)})
-       
+        #print(colores)
+        
         if(img){
             if(separate){
                 ncols = round(sqrt(nlevels))
@@ -48,6 +49,7 @@ BiplotDensity <- function(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels
                 if(!is.null(nrow(x))){
                     f1 <- kde2d(x[, 1], x[, 2], n = 400, lims = c(xliml, xlimu,yliml, ylimu))
                     contours = round(seq(0, max(f1$z), length.out = ncontours), digits = 2)
+                    #print(contours)
                     centre = apply(x, 2, mean)
                 }else{
                     centre = x
@@ -77,3 +79,4 @@ BiplotDensity <- function(X, y = NULL, nlevels = max(y), grouplabels = 1:nlevels
                 text(centre[1], centre[2], labels = grouplabels[i],pos=2,offset=0.1)
         }
 }
+

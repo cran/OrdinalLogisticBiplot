@@ -15,7 +15,7 @@ This function shows a summary of the principal results for the estimation
 }
 \arguments{
   \item{object}{
-This parameter keeps the ordinal logistic biplot object for a variable.
+This parameter keeps 'pordlogist' object for a variable.
 }
   \item{\dots}{
 Additional parameters to summary.

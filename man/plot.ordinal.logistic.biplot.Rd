@@ -4,7 +4,7 @@
 Graphical representation of an Ordinal Logistic Biplot.
 }
 \description{
-Plotting an Ordinal Logistic Biplot. There are parameters related to the way in which
+This function plots an Ordinal Logistic Biplot. There are parameters related to the way in which
 the biplot is plotted. All the posible parameters have default values.
 }
 \usage{
@@ -100,7 +100,7 @@ Boolean parameter to show the clusters studied. Default value is FALSE.
 Variable with the cluster asociated for each item. Default value is NULL.
 }
   \item{chulls}{
-Boolean parameter to specify if it will be plotted convex hulls figures. Default value is FALSE.
+Boolean parameter to specify if convex hulls figures will be plotted . Default value is FALSE.
 }
   \item{centers}{
 Boolean parameter to plot the centers of each cluster. Default value is NULL.

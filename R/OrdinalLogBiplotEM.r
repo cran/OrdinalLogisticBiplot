@@ -14,6 +14,8 @@
 #  A copy of the GNU General Public License is available at
 #  http://www.r-project.org/Licenses/
 #
+
+
 OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 100, penalization = 0.2,
                                 show=FALSE,initial=1,alfa=1) {
 
@@ -21,6 +23,7 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
   if(is.numeric(initial)){
     initial = initials[initial]                                                                                         
   }
+	
 	Q = multiquad(nnodos, dim)
 	X = Q$X
 	A = Q$A
@@ -31,11 +34,12 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 	G = NominalMatrix2Binary(x)
 	s = dim(G)[1]
 	n = dim(G)[2]
+	
 	par = list()
 	par$coefficients = array(0, c(p, dim))
 	par$thresholds = array(0, c(p, Maxcat - 1))	
-  par$fit = array(0,c(p,8))                
-  dimnames(par$fit)[[1]]= dimnames(x)[[2]][1:dim(x)[2]]        
+  par$fit = array(0,c(p,8))                 
+  dimnames(par$fit)[[1]]= dimnames(x)[[2]][1:dim(x)[2]]       
   dimnames(par$fit)[[2]]= c("logLik","Deviance","df","p-value","PCC","CoxSnell","Macfaden","Nagelkerke")   
   
   if(show){print("Calculating initial coordinates")}
@@ -61,8 +65,8 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
     		par$fit[j,3] = model$df                
     		par$fit[j,4] = model$pval            	 			    
     		par$fit[j,5] = model$PercentClasif     
-    		par$fit[j,6] = model$CoxSnell          
-    		par$fit[j,7] = model$MacFaden          
+    		par$fit[j,6] = model$CoxSnell         
+    		par$fit[j,7] = model$MacFaden         
     		par$fit[j,8] = model$Nagelkerke        
 		logLikold = logLikold + model$logLik      
 	}
@@ -93,13 +97,13 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 			par$coefficients[j, ] = model$coefficients
 		        par$thresholds[j,1:nrow(model$thresholds)] = model$thresholds  
         		par$fit[j,1] = model$logLik            
-        		par$fit[j,2] = model$Deviance           		
-        		par$fit[j,3] = model$df               
-        		par$fit[j,4] = model$pval            	 			    
+        		par$fit[j,2] = model$Deviance            		
+        		par$fit[j,3] = model$df                
+        		par$fit[j,4] = model$pval            				    
         		par$fit[j,5] = model$PercentClasif    
-        		par$fit[j,6] = model$CoxSnell          
-        		par$fit[j,7] = model$MacFaden          
-        		par$fit[j,8] = model$Nagelkerke       
+        		par$fit[j,6] = model$CoxSnell         
+        		par$fit[j,7] = model$MacFaden        
+        		par$fit[j,8] = model$Nagelkerke      
 			logLik = logLik + model$logLik
 		}           
 		error = abs((logLik - logLikold)/logLik)
@@ -108,8 +112,6 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
        print(paste("Iteration ",iter,"- Log-Lik:",logLik," - Change:",error,sep=""))		
     }
 	}
-	print(paste("Iterations: ",iter,"- Log-Lik:",logLik," - Change:",error,sep=""))
-	
 	d = sqrt(rowSums(par$coefficients^2) + 1)
 	loadings = solve(diag(d)) %*% par$coefficients
 	thresholds = solve(diag(d)) %*% par$thresholds
@@ -124,3 +126,4 @@ OrdinalLogBiplotEM <- function(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 10
 	class(model) = "ordinal.logistic.biplotEM"
 	return(model)
 }
+

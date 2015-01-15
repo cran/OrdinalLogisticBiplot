@@ -4,7 +4,7 @@
 Alternated EM algorithm for Ordinal Logistic Biplots
 }
 \description{
-This function computes, with an alternated algorithm, the row and column parameters of an Ordinal Logistic Biplot for ordered polytomous data. The row coordinates (E-step) are computed using multidimensional Gauss-Hermite quadratures and Expected \emph{a posteriori} (EAP) scores and parameters for each variable or items (M-step)using Ridge Ordinal Logistic Regression to solve the separation problem present when the points for different categories of a variable are completely separated on the representation plane and the usual fitting methods do not converge. The separation problem is present in almost avery data set for which the goodness of fit is high. 
+This function computes, with an alternated algorithm, the row and column parameters of an Ordinal Logistic Biplot for ordered polytomous data. The row coordinates (E-step) are computed using multidimensional Gauss-Hermite quadratures and Expected \emph{a posteriori} (EAP) scores and parameters for each variable or items (M-step) using Ridge Ordinal Logistic Regression to solve the separation problem present when the points for different categories of a variable are completely separated on the representation plane and the usual fitting methods do not converge. The separation problem is present in almost every data set for which the goodness of fit is high. 
 }
 \usage{
 OrdinalLogBiplotEM(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 100,
@@ -16,10 +16,10 @@ OrdinalLogBiplotEM(x,dim = 2, nnodos = 15, tol = 0.001, maxiter = 100,
 Matrix with the ordinal data. The matrix must be in numerical form. 
 }
   \item{dim}{
-Dimension of the solution
+Dimension of the solution.
 }
   \item{nnodos}{
-Number of nodes for the multidimensional Gauss-Hermite quadrature
+Number of nodes for the multidimensional Gauss-Hermite quadrature.
 }
  \item{tol}{
 Value to stop the process of iterations.
@@ -45,7 +45,7 @@ correspondence analysis if the initial parameter is equal to 1.
 \value{
 An object of class \code{"ordinal.logistic.biplot.EM"}.This has components:
 
-  \item{RowCoordinates}{Coordinates for the rows or the individuals}
+  \item{RowCoordinates}{Coordinates for the rows or individuals}
   \item{ColumnParameters}{List with information about the Ordinal Logistic Models
     calculated for each variable including: estimated parameters with thresholds,
     percents of correct classifications,and pseudo-Rsquared}

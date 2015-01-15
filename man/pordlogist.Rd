@@ -36,7 +36,7 @@ The problem of the existence of the estimators in logistic regression can be see
 
 Rather than maximizing \eqn{{L_j}(\left. {\bf{G}} \right|{{\bf{b}}_{j0}},{{\bf{B}}_j})}{L_j (G | b_j0 , B_j)} we maximize
 
-\deqn{{{L_j}(\left. {\bf{G}} \right|{{\bf{b}}_{j0}},{{\bf{B}}_j})} - \lambda \left( {\left\| {{{\bf{b}}_{j0}}} \right\| + \left\| {{{\bf{B}}_j}} \right\|} \right)}{L_j(G|b_jo,B_j)-\lambda(||b_j0|| + ||B_j||)}
+\deqn{{{L_j}(\left. {\bf{G}} \right|{{\bf{b}}_{j0}},{{\bf{B}}_j})} - \lambda \left( {\left\| {{{\bf{b}}_{j0}}} \right\|^2 + \left\| {{{\bf{B}}_j}} \right\|^2} \right)}{L_j(G|b_jo,B_j)-\lambda(||b_j0||^2 + ||B_j||^2)}
  
 Changing the values of \eqn{\lambda} we obtain slightly different solutions not affected by the separation problem.
 }

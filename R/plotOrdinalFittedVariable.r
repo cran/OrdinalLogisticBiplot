@@ -22,8 +22,8 @@ plotOrdinalFittedVariable <- function(nameVariable,coeffic,D,numFactors,planex =
    numcat = length(coeffic) - numFactors + 1
    
    if(D == 1.702){
-     coeffic = c(coeffic[1:numFactors],(-1)*coeffic[(numFactors+1):length(coeffic)])
-   }      
+      coeffic = c(coeffic[1:numFactors],(-1)*coeffic[(numFactors+1):length(coeffic)])
+   }   
    
    ordBipVar = CalculateOrdinalBiplotGeneral(nameVariable,numcat,coeffic,planex,planey,numFactors,D)
 
